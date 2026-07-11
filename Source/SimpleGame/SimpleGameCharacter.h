@@ -25,5 +25,15 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+// Operations
+public:
+	FORCEINLINE class USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
+
+// Members
+private:
+	// Use forward declaration here
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	USpringArmComponent* CameraArm;		
 
 };

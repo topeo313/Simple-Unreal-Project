@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "GameFramework/SpringArmComponent.h"
 #include "SimpleGameCharacter.h"
 
 // Sets default values
@@ -9,6 +10,9 @@ ASimpleGameCharacter::ASimpleGameCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	this->CameraArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
+	this->CameraArm->SetupAttachment(this->RootComponent);
+	this->CameraArm->TargetArmLength = 415.0f;
 }
 
 // Called when the game starts or when spawned
