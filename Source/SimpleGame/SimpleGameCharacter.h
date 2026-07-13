@@ -2,8 +2,10 @@
 
 #pragma once
 
+#include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputActionValue.h"
 #include "SimpleGameCharacter.generated.h"
 
 UCLASS()
@@ -26,14 +28,27 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-// Operations
+// Properties
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
+	
+protected:
+	// Handles movement in all directions
+	void Move(const FInputActionValue& Value);
 
 // Members
+protected:
+	// Use forward declarations here
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	class UInputMappingContext* PlayerMappingContext; 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	class UInputAction* MoveAction;
+
 private:
-	// Use forward declaration here
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	USpringArmComponent* CameraArm;		
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	UCameraComponent* Camera;
 };
