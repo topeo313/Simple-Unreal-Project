@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameFramework/SpringArmComponent.h"
 #include "SimpleGameCharacter.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
@@ -14,10 +14,14 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	// Create CameraArm component
 	this->CameraArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
 	this->CameraArm->SetupAttachment(this->RootComponent);
-	this->CameraArm->TargetArmLength = 415.0f;
+	this->CameraArm->TargetArmLength = 425.0f;
 	
 	this->Camera = this->CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	this->Camera->SetupAttachment(this->CameraArm, USpringArmComponent::SocketName);
+	
+	this->bUseControllerRotationPitch = true;
+	this->bUseControllerRotationYaw = true;
+	this->bUseControllerRotationRoll = false;
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +53,8 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	
 	UEnhancedInputComponent* EnhancedInputComponent = ::CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(this->MoveAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::Move);
+	EnhancedInputComponent->BindAction(this->TurnLeftRightAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::TurnLeftRight);
+	EnhancedInputComponent->BindAction(this->LookUpDownAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::LookUpDown);
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
@@ -70,5 +76,19 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 		this->AddMovementInput(ForwardDirection, MovementVector.Y); // In Unreal, Y is where we store W/S movement (hence why we swizzle in the InputMappingContext) 
 		this->AddMovementInput(RightDirection, MovementVector.X); // In Unreal, X is where we store A/D movement
 	}
+}
+
+void ASimpleGameCharacter::TurnLeftRight(const FInputActionValue& Value)
+{
+	FVector2D TurnVector = Value.Get<FVector2D>();
+	
+	this->AddControllerYawInput(TurnVector.X);
+}
+
+void ASimpleGameCharacter::LookUpDown(const FInputActionValue& Value)
+{
+	FVector2D LookVector = Value.Get<FVector2D>();
+	
+	this->AddControllerPitchInput(LookVector.Y);
 }
 
