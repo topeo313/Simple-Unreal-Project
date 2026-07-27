@@ -36,11 +36,9 @@ protected:
 	// Handles movement in all directions
 	void Move(const FInputActionValue& Value);
 	
-	// Rotate based on mouse X movement or right gamepad x movement
-	void TurnLeftRight(const FInputActionValue& Value);
-	
-	// Rotate based on mouse Y movement or right gamepad x movement
-	void LookUpDown(const FInputActionValue& Value);
+	// Rotate based on mouse X movement or right gamepad X movement
+	// Rotate based on mouse Y movement or right gamepad Y movement
+	void LookAround(const FInputActionValue& Value);
 	
 
 // Members
@@ -51,15 +49,14 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	class UInputAction* MoveAction;
-
-	// Action to turn (yaw)
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	UInputAction* TurnLeftRightAction;
 	
-	// Action to look up/down
+	// Action to turn (yaw) and look up/down
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	UInputAction* LookUpDownAction;
+	UInputAction* LookAroundAction;
 	
+	// Action to turn (yaw) and look up/down
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* JumpAction;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))

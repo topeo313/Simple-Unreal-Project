@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SimpleGameCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -15,13 +16,22 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	this->CameraArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
 	this->CameraArm->SetupAttachment(this->RootComponent);
 	this->CameraArm->TargetArmLength = 425.0f;
+	this->CameraArm->bUsePawnControlRotation = true; // Update camera arm with controller's rotation
 	
 	this->Camera = this->CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	this->Camera->SetupAttachment(this->CameraArm, USpringArmComponent::SocketName);
+	this->Camera->bUsePawnControlRotation = false; // No need to update camera's rotation here (since camera arm gets updated)
 	
+	// Enable/disable to get this Pawn to match/ignore the controller's pitch, yaw, roll
 	this->bUseControllerRotationPitch = true;
-	this->bUseControllerRotationYaw = true;
+	this->bUseControllerRotationYaw = false;
 	this->bUseControllerRotationRoll = false;
+	
+	UCharacterMovementComponent* CharMovement = this->GetCharacterMovement();
+	CharMovement->bOrientRotationToMovement = true; // Update pawn's rotation based on direction of acceleration (based on CharacterMovement RotationRate)
+	CharMovement->RotationRate = FRotator(0.f, 540.f, 0.f);
+	CharMovement->JumpZVelocity = 500.0f;
+	CharMovement->AirControl = 0.2f;
 }
 
 // Called when the game starts or when spawned
@@ -53,8 +63,10 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	
 	UEnhancedInputComponent* EnhancedInputComponent = ::CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(this->MoveAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::Move);
-	EnhancedInputComponent->BindAction(this->TurnLeftRightAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::TurnLeftRight);
-	EnhancedInputComponent->BindAction(this->LookUpDownAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::LookUpDown);
+	EnhancedInputComponent->BindAction(this->LookAroundAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::LookAround);
+	
+	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::Jump);
+	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::StopJumping);
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
@@ -78,17 +90,9 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void ASimpleGameCharacter::TurnLeftRight(const FInputActionValue& Value)
+void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 {
 	FVector2D TurnVector = Value.Get<FVector2D>();
-	
 	this->AddControllerYawInput(TurnVector.X);
+	this->AddControllerPitchInput(TurnVector.Y);
 }
-
-void ASimpleGameCharacter::LookUpDown(const FInputActionValue& Value)
-{
-	FVector2D LookVector = Value.Get<FVector2D>();
-	
-	this->AddControllerPitchInput(LookVector.Y);
-}
-
