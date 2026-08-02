@@ -8,6 +8,11 @@
 #include "InputActionValue.h"
 #include "SimpleGameCharacter.generated.h"
 
+// Forward declarations
+class USpringArmComponent;
+class UInputMappingContext;
+class UInputAction;
+
 UCLASS()
 class SIMPLEGAME_API ASimpleGameCharacter : public ACharacter
 {
@@ -30,7 +35,7 @@ public:
 	
 // Properties
 public:
-	FORCEINLINE class USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
+	FORCEINLINE USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
 	
 protected:
 	// Handles movement in all directions
@@ -43,25 +48,24 @@ protected:
 
 // Members
 protected:
-	// Use forward declarations here
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	class UInputMappingContext* PlayerMappingContext; 
+	TObjectPtr<UInputMappingContext> PlayerMappingContext; 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	class UInputAction* MoveAction;
-	
-	// Action to turn (yaw) and look up/down
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	UInputAction* LookAroundAction;
+	TObjectPtr<UInputAction> MoveAction;
 	
 	// Action to turn (yaw) and look up/down
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	UInputAction* JumpAction;
+	TObjectPtr<UInputAction> LookAroundAction;
+	
+	// Action to turn (yaw) and look up/down
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> JumpAction;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	USpringArmComponent* CameraArm;		
+	TObjectPtr<USpringArmComponent> CameraArm;		
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	UCameraComponent* Camera;
+	TObjectPtr<UCameraComponent> Camera;
 };
