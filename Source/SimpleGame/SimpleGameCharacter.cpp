@@ -35,7 +35,9 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	CharMovement->AirControl = 0.2f;
 	
 	// Cut top speed down (Default is usually 600.0f)
-    CharMovement->MaxWalkSpeed = 450.0f; 
+	CharMovement->MaxWalkSpeed = 375.0f;
+	
+	this->SmoothedMovementVector = FVector2D::ZeroVector;
 }
 
 // Called when the game starts or when spawned
@@ -95,8 +97,10 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 		FVector ForwardDirection = RotationMatrix.GetUnitAxis(EAxis::X); // In Unreal, X is forward/backward
 		FVector RightDirection = RotationMatrix.GetUnitAxis(EAxis::Y); // In Unreal, Y is left/right
 		
-		this->AddMovementInput(ForwardDirection, MovementVector.Y); // In Unreal, Y is where we store W/S movement (hence why we swizzle in the InputMappingContext) 
-		this->AddMovementInput(RightDirection, MovementVector.X); // In Unreal, X is where we store A/D movement
+		// To keep movement smooth, interpolate between the current movement vector and the calculated movement vector
+		this->SmoothedMovementVector = FMath::Vector2DInterpTo(this->SmoothedMovementVector, MovementVector, this->GetWorld()->GetDeltaSeconds(), ASimpleGameCharacter::MoveInterpolationSpeed);
+		this->AddMovementInput(ForwardDirection, this->SmoothedMovementVector.Y); // In Unreal, Y is where we store W/S movement (hence why we swizzle in the InputMappingContext) 
+		this->AddMovementInput(RightDirection, this->SmoothedMovementVector.X); // In Unreal, X is where we store A/D movement
 	}
 }
 

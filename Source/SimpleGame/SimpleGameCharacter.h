@@ -20,7 +20,8 @@ class SIMPLEGAME_API ASimpleGameCharacter : public ACharacter
 
 // Constants
 private:
-	static constexpr auto MoveThreshold = 0.85f;
+	static constexpr auto MoveThreshold = 0.78f; // Ensures that left joystick movement only occurs above a certain threshold
+	static constexpr auto MoveInterpolationSpeed = 14.0f;
 
 public:
 	// Sets default values for this character's properties
@@ -72,4 +73,6 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
+	
+	FVector2D SmoothedMovementVector;
 };
