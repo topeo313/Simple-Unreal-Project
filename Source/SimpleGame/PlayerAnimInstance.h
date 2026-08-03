@@ -36,7 +36,7 @@ private:
 	float speed;
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
-	bool isPlayerMovementKeyPressed;	
+	bool isPlayerMovementInputEnabled;	
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	bool isInAir;

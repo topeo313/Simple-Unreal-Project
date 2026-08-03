@@ -18,6 +18,10 @@ class SIMPLEGAME_API ASimpleGameCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+// Constants
+private:
+	static constexpr auto MoveThreshold = 0.85f;
+
 public:
 	// Sets default values for this character's properties
 	ASimpleGameCharacter();

@@ -28,5 +28,5 @@ void UPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
 	const FVector velocity = this->GameCharacter->GetVelocity();
 	this->speed = velocity.Size2D(); // No need for upward (z) movement to get speed magnitude
 	this->isInAir = this->GameCharacterMovementComponent->IsFalling();
-	this->isPlayerMovementKeyPressed = this->GameCharacterMovementComponent->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER;
+	this->isPlayerMovementInputEnabled = this->GameCharacterMovementComponent->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER;
 }

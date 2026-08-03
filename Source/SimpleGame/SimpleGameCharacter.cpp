@@ -33,6 +33,9 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	CharMovement->RotationRate = FRotator(0.f, 540.f, 0.f);
 	CharMovement->JumpZVelocity = 500.0f;
 	CharMovement->AirControl = 0.2f;
+	
+	// Cut top speed down (Default is usually 600.0f)
+    CharMovement->MaxWalkSpeed = 450.0f; 
 }
 
 // Called when the game starts or when spawned
@@ -76,6 +79,12 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 	{
 		// Extract 2D axis data (x and y) 
 		FVector2D MovementVector = Value.Get<FVector2D>();
+		
+		// Check to ensure that input vector hits a certain threshold before triggering (e.g. for detecting left joystick movement)
+		if (MovementVector.Size() < ASimpleGameCharacter::MoveThreshold)
+		{
+			return;
+		}		
 		
 		// Extract yaw rotation info
 		FRotator Rotation = this->Controller->GetControlRotation();
