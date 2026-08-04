@@ -54,25 +54,25 @@ protected:
 // Members
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputMappingContext> PlayerMappingContext; 
+	TObjectPtr<UInputMappingContext> PlayerMappingContext = nullptr; 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> MoveAction;
-	
-	// Action to turn (yaw) and look up/down
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> LookAroundAction;
+	TObjectPtr<UInputAction> MoveAction = nullptr;
 	
 	// Action to turn (yaw) and look up/down
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> JumpAction;
+	TObjectPtr<UInputAction> LookAroundAction = nullptr;
+	
+	// Action to turn (yaw) and look up/down
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> JumpAction = nullptr;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	TObjectPtr<USpringArmComponent> CameraArm;		
+	TObjectPtr<USpringArmComponent> CameraArm = nullptr;		
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCameraComponent> Camera;
+	TObjectPtr<UCameraComponent> Camera = nullptr;
 	
 	FVector2D SmoothedMovementVector;
 };

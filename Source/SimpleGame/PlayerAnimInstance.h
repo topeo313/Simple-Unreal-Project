@@ -27,10 +27,10 @@ public:
 // Members
 private:
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<ASimpleGameCharacter> GameCharacter;
+	TObjectPtr<ASimpleGameCharacter> GameCharacter = nullptr;
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCharacterMovementComponent> GameCharacterMovementComponent;
+	TObjectPtr<UCharacterMovementComponent> GameCharacterMovementComponent = nullptr;
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	float speed;

@@ -14,7 +14,7 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create CameraArm component
-	this->CameraArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
+	this->CameraArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Arm"));
 	this->CameraArm->SetupAttachment(this->RootComponent);
 	this->CameraArm->TargetArmLength = 425.0f;
 	this->CameraArm->bUsePawnControlRotation = true; // Update camera arm with controller's rotation
