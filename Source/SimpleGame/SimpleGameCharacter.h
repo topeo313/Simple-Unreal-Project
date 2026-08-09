@@ -12,6 +12,7 @@
 class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
+class UAnimMontage;
 
 UCLASS()
 class SIMPLEGAME_API ASimpleGameCharacter : public ACharacter
@@ -50,7 +51,8 @@ protected:
 	// Rotate based on mouse Y movement or right gamepad Y movement
 	void LookAround(const FInputActionValue& Value);
 	
-
+	void Attack_A_Started();
+	
 // Members
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
@@ -66,7 +68,18 @@ protected:
 	// Action to turn (yaw) and look up/down
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction = nullptr;
-
+	
+	// Action to carry execute "Attack A" action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> AttackA_Action = nullptr;
+	
+	// Attack montage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> AttackA_Montage = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
+	float AttackA_PlayRate = 0.8f;
+	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USpringArmComponent> CameraArm = nullptr;		

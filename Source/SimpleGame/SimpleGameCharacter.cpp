@@ -73,6 +73,8 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	
 	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::Jump);
 	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::StopJumping);
+	
+	EnhancedInputComponent->BindAction(this->AttackA_Action, ETriggerEvent::Started, this, &ASimpleGameCharacter::Attack_A_Started);
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
@@ -99,8 +101,8 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 		
 		// To keep movement smooth, interpolate between the current movement vector and the calculated movement vector
 		this->SmoothedMovementVector = FMath::Vector2DInterpTo(this->SmoothedMovementVector, MovementVector, this->GetWorld()->GetDeltaSeconds(), ASimpleGameCharacter::MoveInterpolationSpeed);
-		this->AddMovementInput(ForwardDirection, this->SmoothedMovementVector.Y); // In Unreal, Y is where we store W/S movement (hence why we swizzle in the InputMappingContext) 
-		this->AddMovementInput(RightDirection, this->SmoothedMovementVector.X); // In Unreal, X is where we store A/D movement
+		this->AddMovementInput(ForwardDirection, this->SmoothedMovementVector.Y); // In Unreal, Y is where we choose to store W/S movement (hence why we swizzle in the InputMappingContext) 
+		this->AddMovementInput(RightDirection, this->SmoothedMovementVector.X); // In Unreal, X is where we choose to store A/D movement
 	}
 }
 
@@ -109,4 +111,19 @@ void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 	FVector2D TurnVector = Value.Get<FVector2D>();
 	this->AddControllerYawInput(TurnVector.X);
 	this->AddControllerPitchInput(TurnVector.Y);
+}
+
+void ASimpleGameCharacter::Attack_A_Started()
+{
+	UAnimInstance* AnimInstance = this->GetMesh()->GetAnimInstance();	
+	if (AnimInstance != nullptr)
+	{
+		if (this->AttackA_Montage != nullptr)
+		{
+			if (!AnimInstance->Montage_IsPlaying(this->AttackA_Montage))
+			{	
+				AnimInstance->Montage_Play(this->AttackA_Montage, this->AttackA_PlayRate);
+			}
+		}	
+	}
 }
