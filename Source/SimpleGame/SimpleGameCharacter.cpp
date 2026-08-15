@@ -69,7 +69,6 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	
 	UEnhancedInputComponent* EnhancedInputComponent = ::CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(this->MoveAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::Move);
-	EnhancedInputComponent->BindAction(this->MoveAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::MoveEnd);
 	EnhancedInputComponent->BindAction(this->LookAroundAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::LookAround);
 	
 	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::Jump);
@@ -78,19 +77,35 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(this->AttackA_Action, ETriggerEvent::Started, this, &ASimpleGameCharacter::Attack_A_Started);
 }
 
+bool ASimpleGameCharacter::IsAttacking() const
+{
+	UAnimInstance* AnimInstance = this->GetAnimInstance();
+	if (AnimInstance == nullptr)
+	{
+		return false;
+	}
+	
+	return AnimInstance->Montage_IsPlaying(this->AttackA_Montage);
+}
+
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 {
+	if (this->IsAttacking())
+	{
+		return;
+	}
+
+	// Extract 2D axis data (x and y) 
+	FVector2D MovementVector = Value.Get<FVector2D>();
+	
+	// Check to ensure that input vector hits a certain threshold before triggering (e.g. for detecting left joystick movement)
+	if (MovementVector.Size() < ASimpleGameCharacter::MoveThreshold)
+	{
+		return;
+	}		
+		
 	if (this->Controller != nullptr)
 	{
-		// Extract 2D axis data (x and y) 
-		FVector2D MovementVector = Value.Get<FVector2D>();
-		
-		// Check to ensure that input vector hits a certain threshold before triggering (e.g. for detecting left joystick movement)
-		if (MovementVector.Size() < ASimpleGameCharacter::MoveThreshold)
-		{
-			return;
-		}		
-		
 		// Extract yaw rotation info
 		FRotator Rotation = this->Controller->GetControlRotation();
 		FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -107,10 +122,6 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void ASimpleGameCharacter::MoveEnd(const FInputActionValue& Value)
-{
-}
-
 void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 {
 	FVector2D TurnVector = Value.Get<FVector2D>();
@@ -120,14 +131,14 @@ void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 
 void ASimpleGameCharacter::Attack_A_Started()
 {
-	UAnimInstance* AnimInstance = this->GetMesh()->GetAnimInstance();	
+	UAnimInstance* AnimInstance = this->GetAnimInstance();
 	if (AnimInstance != nullptr)
 	{
 		if (this->AttackA_Montage != nullptr)
 		{
 			if (!AnimInstance->Montage_IsPlaying(this->AttackA_Montage))
 			{	
-				AnimInstance->Montage_Play(this->AttackA_Montage, this->AttackA_PlayRate);
+				AnimInstance->Montage_Play(this->AttackA_Montage, this->AttackA_PlayRate);				
 			}
 		}	
 	}

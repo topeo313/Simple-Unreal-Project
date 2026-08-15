@@ -23,15 +23,12 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 {
 	UAnimInstance::NativeThreadSafeUpdateAnimation(DeltaSeconds);
-}
-
-
-void UPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
-{
+	
 	if (this->GameCharacter == nullptr || this->GameCharacterMovementComponent == nullptr) return;
 	
 	const FVector velocity = this->GameCharacter->GetVelocity();
 	this->speed = velocity.Size2D(); // No need for upward (z) movement to get speed magnitude
 	this->isInAir = this->GameCharacterMovementComponent->IsFalling();
 	this->isPlayerMovementInputEnabled = this->GameCharacterMovementComponent->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER;
+	this->isAttacking = this->GameCharacter->IsAttacking();
 }

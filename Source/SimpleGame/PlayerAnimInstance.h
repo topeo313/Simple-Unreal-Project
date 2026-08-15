@@ -21,10 +21,7 @@ class SIMPLEGAME_API UPlayerAnimInstance : public UAnimInstance
 public:
 	void NativeInitializeAnimation() override;
 	
-	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
-	
-	UFUNCTION(BlueprintCallable)
-	void UpdateAnimationProperties(float deltaTime);
+	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;	
 	
 // Members
 private:
@@ -39,7 +36,10 @@ private:
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	bool isPlayerMovementInputEnabled;	
-	
+		
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	bool isInAir;
+	
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	bool isAttacking;
 };
