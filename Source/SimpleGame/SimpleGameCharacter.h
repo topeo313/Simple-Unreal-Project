@@ -46,6 +46,7 @@ public:
 protected:
 	// Handles movement in all directions
 	void Move(const FInputActionValue& Value);
+	void MoveEnd(const FInputActionValue& Value);
 	
 	// Rotate based on mouse X movement or right gamepad X movement
 	// Rotate based on mouse Y movement or right gamepad Y movement

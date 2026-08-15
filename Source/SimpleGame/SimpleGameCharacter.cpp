@@ -69,6 +69,7 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	
 	UEnhancedInputComponent* EnhancedInputComponent = ::CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(this->MoveAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::Move);
+	EnhancedInputComponent->BindAction(this->MoveAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::MoveEnd);
 	EnhancedInputComponent->BindAction(this->LookAroundAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::LookAround);
 	
 	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::Jump);
@@ -104,6 +105,10 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 		this->AddMovementInput(ForwardDirection, this->SmoothedMovementVector.Y); // In Unreal, Y is where we choose to store W/S movement (hence why we swizzle in the InputMappingContext) 
 		this->AddMovementInput(RightDirection, this->SmoothedMovementVector.X); // In Unreal, X is where we choose to store A/D movement
 	}
+}
+
+void ASimpleGameCharacter::MoveEnd(const FInputActionValue& Value)
+{
 }
 
 void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)

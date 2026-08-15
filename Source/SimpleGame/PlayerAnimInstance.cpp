@@ -20,6 +20,11 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 	}
 }
 
+void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
+{
+	UAnimInstance::NativeThreadSafeUpdateAnimation(DeltaSeconds);
+}
+
 
 void UPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
 {

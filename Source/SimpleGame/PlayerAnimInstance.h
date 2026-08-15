@@ -19,7 +19,9 @@ class SIMPLEGAME_API UPlayerAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
-	virtual void NativeInitializeAnimation() override;
+	void NativeInitializeAnimation() override;
+	
+	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 	
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimationProperties(float deltaTime);
