@@ -22,7 +22,7 @@ class SIMPLEGAME_API ASimpleGameCharacter : public ACharacter
 // Constants
 private:
 	static constexpr auto MoveThreshold = 0.78f; // Ensures that left joystick movement only occurs above a certain threshold
-	static constexpr auto MoveInterpolationSpeed = 14.0f;
+	static constexpr auto MoveInterpolationSpeed = 15.0f;
 
 public:
 	// Sets default values for this character's properties
@@ -44,7 +44,8 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
 	FORCEINLINE UAnimInstance* GetAnimInstance() const { return this->GetMesh()->GetAnimInstance(); }
 	
-	bool IsAttacking() const;
+	bool IsAttackStarted();
+	bool IsAttacking();
 	
 protected:
 	// Handles movement in all directions
@@ -75,14 +76,10 @@ protected:
 	// Action to carry execute "Attack A" action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> AttackA_Action = nullptr;
-	
-	// Attack montage
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimMontage> AttackA_Montage = nullptr;
-	
+		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
 	float AttackA_PlayRate = 0.8f;
-		
+			
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USpringArmComponent> CameraArm = nullptr;		
@@ -91,4 +88,6 @@ private:
 	TObjectPtr<UCameraComponent> Camera = nullptr;
 	
 	FVector2D SmoothedMovementVector;
+	
+	bool isAttackStarted;
 };

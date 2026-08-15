@@ -30,5 +30,6 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->speed = velocity.Size2D(); // No need for upward (z) movement to get speed magnitude
 	this->isInAir = this->GameCharacterMovementComponent->IsFalling();
 	this->isPlayerMovementInputEnabled = this->GameCharacterMovementComponent->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER;
+	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
 	this->isAttacking = this->GameCharacter->IsAttacking();
 }

@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "Animation/AnimNode_StateMachine.h"
 
 // Sets default values
 ASimpleGameCharacter::ASimpleGameCharacter()
@@ -77,15 +78,27 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(this->AttackA_Action, ETriggerEvent::Started, this, &ASimpleGameCharacter::Attack_A_Started);
 }
 
-bool ASimpleGameCharacter::IsAttacking() const
+bool ASimpleGameCharacter::IsAttackStarted()
 {
-	UAnimInstance* AnimInstance = this->GetAnimInstance();
-	if (AnimInstance == nullptr)
+	bool attackStarted = this->isAttackStarted;
+	
+	if (this->isAttackStarted)
+	{		
+		this->isAttackStarted = false; // Reset to false after it's been triggered
+	}
+		
+	return attackStarted;
+}
+
+bool ASimpleGameCharacter::IsAttacking()
+{
+	const FAnimNode_StateMachine* StateMachine = this->GetAnimInstance()->GetStateMachineInstanceFromName(FName("Ground Movement"));
+	if (StateMachine == nullptr)
 	{
 		return false;
 	}
 	
-	return AnimInstance->Montage_IsPlaying(this->AttackA_Montage);
+	return StateMachine->GetCurrentStateName() == FName("Attack");
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
@@ -131,15 +144,5 @@ void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 
 void ASimpleGameCharacter::Attack_A_Started()
 {
-	UAnimInstance* AnimInstance = this->GetAnimInstance();
-	if (AnimInstance != nullptr)
-	{
-		if (this->AttackA_Montage != nullptr)
-		{
-			if (!AnimInstance->Montage_IsPlaying(this->AttackA_Montage))
-			{	
-				AnimInstance->Montage_Play(this->AttackA_Montage, this->AttackA_PlayRate);				
-			}
-		}	
-	}
+	this->isAttackStarted = true;
 }
