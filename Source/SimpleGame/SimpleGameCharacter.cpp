@@ -1,12 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SimpleGameCharacter.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
+#include "Animation/AnimNode_StateMachine.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerState.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "InputMappingContext.h"
-#include "Animation/AnimNode_StateMachine.h"
+#include "SimpleGameCharacter.h"
 
 // Sets default values
 ASimpleGameCharacter::ASimpleGameCharacter()
@@ -57,6 +58,35 @@ void ASimpleGameCharacter::BeginPlay()
 	}
 }
 
+void ASimpleGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) 
+{
+	Super::EndPlay(EndPlayReason);	
+	
+	if (this->GetWorldTimerManager().IsTimerActive(this->AttackCooldownTimerHandle))
+	{
+		this->GetWorldTimerManager().ClearTimer(this->AttackCooldownTimerHandle);
+	}
+}
+
+void ASimpleGameCharacter::ResetAttackParameters()
+{
+	this->AttackStarted = false;
+	
+	this->GetWorldTimerManager().SetTimer(
+		this->AttackCooldownTimerHandle,
+		this,
+		&ASimpleGameCharacter::OnAttackCooldownTimerElapsed,
+		ASimpleGameCharacter::AttackCooldownTimeSeconds
+	);
+	
+	this->InAttackCooldown = true;	
+}
+
+void ASimpleGameCharacter::OnAttackCooldownTimerElapsed()
+{
+	this->InAttackCooldown = false;
+}
+
 // Called every frame
 void ASimpleGameCharacter::Tick(float DeltaTime)
 {
@@ -78,18 +108,6 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(this->AttackA_Action, ETriggerEvent::Started, this, &ASimpleGameCharacter::Attack_A_Started);
 }
 
-bool ASimpleGameCharacter::IsAttackStarted()
-{
-	bool attackStarted = this->isAttackStarted;
-	
-	if (this->isAttackStarted)
-	{		
-		this->isAttackStarted = false; // Reset to false after it's been triggered
-	}
-		
-	return attackStarted;
-}
-
 bool ASimpleGameCharacter::IsAttacking()
 {
 	const FAnimNode_StateMachine* StateMachine = this->GetAnimInstance()->GetStateMachineInstanceFromName(FName("Ground Movement"));
@@ -103,7 +121,7 @@ bool ASimpleGameCharacter::IsAttacking()
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 {
-	if (this->IsAttacking())
+	if (this->IsAttackStarted() || this->IsAttacking())
 	{
 		return;
 	}
@@ -144,5 +162,10 @@ void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 
 void ASimpleGameCharacter::Attack_A_Started()
 {
-	this->isAttackStarted = true;
+	if (this->InAttackCooldown)
+	{
+		return;
+	}
+
+	this->AttackStarted = true;
 }

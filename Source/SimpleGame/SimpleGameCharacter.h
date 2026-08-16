@@ -23,14 +23,18 @@ class SIMPLEGAME_API ASimpleGameCharacter : public ACharacter
 private:
 	static constexpr auto MoveThreshold = 0.78f; // Ensures that left joystick movement only occurs above a certain threshold
 	static constexpr auto MoveInterpolationSpeed = 15.0f;
+	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
 
+// Initialization
 public:
 	// Sets default values for this character's properties
 	ASimpleGameCharacter();
 
+// Operations
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -39,12 +43,17 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	void ResetAttackParameters();	
+	
+private:	
+	void OnAttackCooldownTimerElapsed();
+	
 // Properties
 public:
 	FORCEINLINE USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
 	FORCEINLINE UAnimInstance* GetAnimInstance() const { return this->GetMesh()->GetAnimInstance(); }
 	
-	bool IsAttackStarted();
+	bool IsAttackStarted() const { return this->AttackStarted; }
 	bool IsAttacking();
 	
 protected:
@@ -87,7 +96,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera = nullptr;
 	
+	FTimerHandle AttackCooldownTimerHandle;
+	
 	FVector2D SmoothedMovementVector;
 	
-	bool isAttackStarted;
+	bool AttackStarted;
+	
+	bool InAttackCooldown;
 };

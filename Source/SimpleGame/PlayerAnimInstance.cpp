@@ -3,6 +3,7 @@
 
 #include "PlayerAnimInstance.h"
 #include "SimpleGameCharacter.h"
+#include "Animation/AnimNode_StateMachine.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -18,6 +19,9 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 			this->GameCharacterMovementComponent = this->GameCharacter->GetCharacterMovement();
 		}
 	}
+	
+	FOnGraphStateChanged AttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
+	this->AddNativeStateExitBinding(FName("Ground Movement"), FName("Attack"), AttackExitDelegate);
 }
 
 void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -32,4 +36,11 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isPlayerMovementInputEnabled = this->GameCharacterMovementComponent->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER;
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
 	this->isAttacking = this->GameCharacter->IsAttacking();
+	
+	//UE_LOG(LogTemp, Warning, TEXT("%d"), this->isPlayerMovementInputEnabled);
+}
+
+void UPlayerAnimInstance::OnAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
+{
+	this->GameCharacter->ResetAttackParameters();
 }

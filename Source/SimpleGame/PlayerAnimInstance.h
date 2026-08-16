@@ -18,11 +18,15 @@ class SIMPLEGAME_API UPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 	
+// Operations
 public:
 	void NativeInitializeAnimation() override;
 	
 	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;	
 	
+protected:
+	void OnAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);	
+		
 // Members
 private:
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
