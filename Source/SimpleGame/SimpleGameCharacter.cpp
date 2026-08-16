@@ -3,8 +3,6 @@
 #include "Animation/AnimNode_StateMachine.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputMappingContext.h"
 #include "SimpleGameCharacter.h"
@@ -62,23 +60,29 @@ void ASimpleGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);	
 	
-	if (this->GetWorldTimerManager().IsTimerActive(this->AttackCooldownTimerHandle))
+	AsyncTask(ENamedThreads::GameThread, [this]()
 	{
-		this->GetWorldTimerManager().ClearTimer(this->AttackCooldownTimerHandle);
-	}
+		if (this->GetWorldTimerManager().IsTimerActive(this->AttackCooldownTimerHandle))
+		{
+			this->GetWorldTimerManager().ClearTimer(this->AttackCooldownTimerHandle);
+		}
+	});	
 }
 
 void ASimpleGameCharacter::ResetAttackParameters()
 {
 	this->AttackStarted = false;
 	
-	this->GetWorldTimerManager().SetTimer(
-		this->AttackCooldownTimerHandle,
-		this,
-		&ASimpleGameCharacter::OnAttackCooldownTimerElapsed,
-		ASimpleGameCharacter::AttackCooldownTimeSeconds
-	);
-	
+	AsyncTask(ENamedThreads::GameThread, [this]()
+	{	
+		this->GetWorldTimerManager().SetTimer(
+			this->AttackCooldownTimerHandle,
+			this,
+			&ASimpleGameCharacter::OnAttackCooldownTimerElapsed,
+			ASimpleGameCharacter::AttackCooldownTimeSeconds
+		);		
+	});
+
 	this->InAttackCooldown = true;	
 }
 
@@ -162,7 +166,11 @@ void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 
 void ASimpleGameCharacter::Attack_A_Started()
 {
-	if (this->InAttackCooldown)
+	// To prevent the character animations from looking stuttery or jumpy, we avoid going into the attack state if the character
+	// is both moving AND trying to attack within the attack cooldown period (i.e. rapidly pressing the attack button). We check for 
+	// movement along with the cooldown because moving while mashing the attack button confuses the state machine, so we want to be
+	// extra sure that we guard against the jittery jumpy
+	if (this->InAttackCooldown && this->IsPlayerMovementInputEnabled())
 	{
 		return;
 	}

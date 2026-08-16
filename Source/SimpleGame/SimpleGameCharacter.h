@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
 #include "SimpleGameCharacter.generated.h"
 
@@ -53,6 +54,7 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
 	FORCEINLINE UAnimInstance* GetAnimInstance() const { return this->GetMesh()->GetAnimInstance(); }
 	
+	bool IsPlayerMovementInputEnabled() const { return this->GetCharacterMovement()->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER; }
 	bool IsAttackStarted() const { return this->AttackStarted; }
 	bool IsAttacking();
 	
