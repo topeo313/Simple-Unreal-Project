@@ -10,10 +10,10 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 	
-	APawn* pawnOwner = this->TryGetPawnOwner();
-	if (pawnOwner != nullptr)
+	APawn* PawnOwner = this->TryGetPawnOwner();
+	if (PawnOwner != nullptr)
 	{
-		this->GameCharacter = ::Cast<ASimpleGameCharacter>(pawnOwner);
+		this->GameCharacter = ::Cast<ASimpleGameCharacter>(PawnOwner);
 		if (this->GameCharacter != nullptr)
 		{
 			this->GameCharacterMovementComponent = this->GameCharacter->GetCharacterMovement();
@@ -33,6 +33,7 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	const FVector velocity = this->GameCharacter->GetVelocity();
 	this->speed = velocity.Size2D(); // No need for upward (z) movement to get speed magnitude
 	this->isInAir = this->GameCharacterMovementComponent->IsFalling();
+	this->isFallingDown = velocity.Z < 0.0;
 	this->isPlayerMovementInputEnabled = this->GameCharacter->IsPlayerMovementInputEnabled();
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
 	this->isAttacking = this->GameCharacter->IsAttacking();

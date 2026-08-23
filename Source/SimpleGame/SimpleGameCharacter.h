@@ -98,6 +98,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera = nullptr;
 	
+	const FAnimNode_StateMachine* GroundMovementStateMachine = nullptr;
+	
 	FTimerHandle AttackCooldownTimerHandle;
 	
 	FVector2D SmoothedMovementVector;

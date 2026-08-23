@@ -31,7 +31,7 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	UCharacterMovementComponent* CharMovement = this->GetCharacterMovement();
 	CharMovement->bOrientRotationToMovement = true; // Update pawn's rotation based on direction of acceleration (based on CharacterMovement RotationRate)
 	CharMovement->RotationRate = FRotator(0.f, 540.f, 0.f);
-	CharMovement->JumpZVelocity = 500.0f;
+	CharMovement->JumpZVelocity = 400.0f;
 	CharMovement->AirControl = 0.2f;
 	
 	// Cut top speed down (Default is usually 600.0f)
@@ -53,6 +53,12 @@ void ASimpleGameCharacter::BeginPlay()
 		{
 			PcSubsystem->AddMappingContext(this->PlayerMappingContext, 0);
 		}
+	}
+
+	UAnimInstance* AnimInstance = this->GetAnimInstance();
+	if (AnimInstance != nullptr)
+	{
+		this->GroundMovementStateMachine = AnimInstance->GetStateMachineInstanceFromName(FName("Ground Movement"));
 	}
 }
 
@@ -113,14 +119,13 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 }
 
 bool ASimpleGameCharacter::IsAttacking()
-{
-	const FAnimNode_StateMachine* StateMachine = this->GetAnimInstance()->GetStateMachineInstanceFromName(FName("Ground Movement"));
-	if (StateMachine == nullptr)
+{	 
+	if (this->GroundMovementStateMachine == nullptr)
 	{
 		return false;
 	}
 	
-	return StateMachine->GetCurrentStateName() == FName("Attack");
+	return this->GroundMovementStateMachine->GetCurrentStateName() == FName("Attack");
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
@@ -168,9 +173,10 @@ void ASimpleGameCharacter::Attack_A_Started()
 {
 	// To prevent the character animations from looking stuttery or jumpy, we avoid going into the attack state if the character
 	// is both moving AND trying to attack within the attack cooldown period (i.e. rapidly pressing the attack button). We check for 
-	// movement along with the cooldown because moving while mashing the attack button confuses the state machine, so we want to be
-	// extra sure that we guard against the jittery jumpy
-	if (this->InAttackCooldown && this->IsPlayerMovementInputEnabled())
+	// both movement and the cooldown because moving while mashing the attack button confuses the state machine, so we want to be
+	// extra sure that we guard against the jittery/jumpy animations
+	bool moveAttackDuringCooldown = this->InAttackCooldown && this->IsPlayerMovementInputEnabled();
+	if (moveAttackDuringCooldown || this->GetCharacterMovement()->IsFalling())
 	{
 		return;
 	}
