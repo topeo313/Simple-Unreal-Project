@@ -120,7 +120,7 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void ASimpleGameCharacter::ResetAttackParameters()
 {
 	this->AttackStarted = false;	
-	this->SetTimer(this->JumpCooldownTimerHandle, &ASimpleGameCharacter::OnJumpCooldownTimerElapsed, ASimpleGameCharacter::JumpCooldownTimeSeconds);
+	this->SetTimer(this->AttackCooldownTimerHandle, &ASimpleGameCharacter::OnAttackCooldownTimerElapsed, ASimpleGameCharacter::AttackCooldownTimeSeconds);
 	this->InAttackCooldown = true;	
 }
 
@@ -136,7 +136,7 @@ void ASimpleGameCharacter::OnAttackCooldownTimerElapsed()
 
 void ASimpleGameCharacter::Jump()
 {
-	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown)
+	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown || this->IsAttackStarted())
 	{
 		return;
 	}
