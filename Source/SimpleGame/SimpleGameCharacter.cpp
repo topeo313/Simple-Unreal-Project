@@ -64,37 +64,36 @@ void ASimpleGameCharacter::BeginPlay()
 
 void ASimpleGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) 
 {
-	Super::EndPlay(EndPlayReason);	
+	Super::EndPlay(EndPlayReason);		
 	
-	AsyncTask(ENamedThreads::GameThread, [this]()
-	{
-		if (this->GetWorldTimerManager().IsTimerActive(this->AttackCooldownTimerHandle))
-		{
-			this->GetWorldTimerManager().ClearTimer(this->AttackCooldownTimerHandle);
-		}
-	});	
+	this->ClearTimer(this->AttackCooldownTimerHandle);
+	this->ClearTimer(this->JumpCooldownTimerHandle);
 }
 
-void ASimpleGameCharacter::ResetAttackParameters()
+void ASimpleGameCharacter::SetTimer(FTimerHandle TimerHandle, 
+	TDelegate<void(), FNotThreadSafeNotCheckedDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate,
+	 float DurationSeconds)
 {
-	this->AttackStarted = false;
-	
-	AsyncTask(ENamedThreads::GameThread, [this]()
+	AsyncTask(ENamedThreads::GameThread, [this, &TimerHandle, TimerDelegate, DurationSeconds]()
 	{	
 		this->GetWorldTimerManager().SetTimer(
-			this->AttackCooldownTimerHandle,
+			TimerHandle,
 			this,
-			&ASimpleGameCharacter::OnAttackCooldownTimerElapsed,
-			ASimpleGameCharacter::AttackCooldownTimeSeconds
+			TimerDelegate,
+			DurationSeconds
 		);		
 	});
-
-	this->InAttackCooldown = true;	
 }
 
-void ASimpleGameCharacter::OnAttackCooldownTimerElapsed()
+void ASimpleGameCharacter::ClearTimer(FTimerHandle TimerHandle)
 {
-	this->InAttackCooldown = false;
+	AsyncTask(ENamedThreads::GameThread, [this, &TimerHandle]()
+	{
+		if (this->GetWorldTimerManager().IsTimerActive(TimerHandle))
+		{
+			this->GetWorldTimerManager().ClearTimer(TimerHandle);
+		}
+	});	
 }
 
 // Called every frame
@@ -116,6 +115,39 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::StopJumping);
 	
 	EnhancedInputComponent->BindAction(this->AttackA_Action, ETriggerEvent::Started, this, &ASimpleGameCharacter::Attack_A_Started);
+}
+
+void ASimpleGameCharacter::ResetAttackParameters()
+{
+	this->AttackStarted = false;	
+	this->SetTimer(this->JumpCooldownTimerHandle, &ASimpleGameCharacter::OnJumpCooldownTimerElapsed, ASimpleGameCharacter::JumpCooldownTimeSeconds);
+	this->InAttackCooldown = true;	
+}
+
+void ASimpleGameCharacter::OnJumpCooldownTimerElapsed()
+{
+	this->InJumpCooldown = false;
+}
+
+void ASimpleGameCharacter::OnAttackCooldownTimerElapsed()
+{
+	this->InAttackCooldown = false;
+}
+
+void ASimpleGameCharacter::Jump()
+{
+	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown)
+	{
+		return;
+	}
+	
+	Super::Jump();
+}
+
+void ASimpleGameCharacter::Landed(const FHitResult& Hit)
+{
+	this->SetTimer(this->JumpCooldownTimerHandle, &ASimpleGameCharacter::OnJumpCooldownTimerElapsed, ASimpleGameCharacter::JumpCooldownTimeSeconds);
+	this->InJumpCooldown = true;
 }
 
 bool ASimpleGameCharacter::IsAttacking()

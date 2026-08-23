@@ -24,6 +24,7 @@ class SIMPLEGAME_API ASimpleGameCharacter : public ACharacter
 private:
 	static constexpr auto MoveThreshold = 0.78f; // Ensures that left joystick movement only occurs above a certain threshold
 	static constexpr auto MoveInterpolationSpeed = 15.0f;
+	static constexpr auto JumpCooldownTimeSeconds = 0.175f;
 	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
 
 // Initialization
@@ -36,6 +37,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
+	void SetTimer(FTimerHandle TimerHandle, 
+		TDelegate<void(), FNotThreadSafeNotCheckedDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate,
+		float DurationSeconds);
+		
+	void ClearTimer(FTimerHandle TimerHandle);
 
 public:	
 	// Called every frame
@@ -46,13 +53,17 @@ public:
 	
 	void ResetAttackParameters();	
 	
-private:	
+private:
+	void OnJumpCooldownTimerElapsed();	
 	void OnAttackCooldownTimerElapsed();
 	
 // Properties
 public:
 	FORCEINLINE USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
 	FORCEINLINE UAnimInstance* GetAnimInstance() const { return this->GetMesh()->GetAnimInstance(); }
+	
+	virtual void Jump() override;	
+	virtual void Landed(const FHitResult& Hit) override;
 	
 	bool IsPlayerMovementInputEnabled() const { return this->GetCharacterMovement()->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER; }
 	bool IsAttackStarted() const { return this->AttackStarted; }
@@ -100,11 +111,15 @@ private:
 	
 	const FAnimNode_StateMachine* GroundMovementStateMachine = nullptr;
 	
+	FTimerHandle JumpCooldownTimerHandle;
+	
+	bool InJumpCooldown;
+	
 	FTimerHandle AttackCooldownTimerHandle;
-	
-	FVector2D SmoothedMovementVector;
-	
+		
 	bool AttackStarted;
 	
 	bool InAttackCooldown;
+	
+	FVector2D SmoothedMovementVector;
 };
