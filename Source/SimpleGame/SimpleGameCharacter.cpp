@@ -65,35 +65,31 @@ void ASimpleGameCharacter::BeginPlay()
 void ASimpleGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) 
 {
 	Super::EndPlay(EndPlayReason);		
-	
-	this->ClearTimer(this->AttackCooldownTimerHandle);
-	this->ClearTimer(this->JumpCooldownTimerHandle);
 }
 
-void ASimpleGameCharacter::SetTimer(FTimerHandle TimerHandle, 
-	TDelegate<void(), FNotThreadSafeNotCheckedDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate,
-	 float DurationSeconds)
+void ASimpleGameCharacter::SetTimer(
+	TDelegate<void(), FDefaultTSDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate, 
+	float DurationSeconds)
 {
-	AsyncTask(ENamedThreads::GameThread, [this, &TimerHandle, TimerDelegate, DurationSeconds]()
+	TWeakObjectPtr<ASimpleGameCharacter> WeakThis(this);
+
+	AsyncTask(ENamedThreads::GameThread, [WeakThis, TimerDelegate, DurationSeconds]() mutable
 	{	
-		this->GetWorldTimerManager().SetTimer(
-			TimerHandle,
-			this,
-			TimerDelegate,
-			DurationSeconds
-		);		
+		if (WeakThis.IsValid())
+		{			
+			FTimerHandle TimerHandle;
+				
+			FTimerDelegate SafeDelegate;
+			SafeDelegate.BindUObject(WeakThis.Get(), TimerDelegate);
+	
+			WeakThis->GetWorldTimerManager().SetTimer(
+				TimerHandle,
+				SafeDelegate,
+				DurationSeconds,
+				false
+			);
+		}			
 	});
-}
-
-void ASimpleGameCharacter::ClearTimer(FTimerHandle TimerHandle)
-{
-	AsyncTask(ENamedThreads::GameThread, [this, &TimerHandle]()
-	{
-		if (this->GetWorldTimerManager().IsTimerActive(TimerHandle))
-		{
-			this->GetWorldTimerManager().ClearTimer(TimerHandle);
-		}
-	});	
 }
 
 // Called every frame
@@ -120,7 +116,7 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void ASimpleGameCharacter::ResetAttackParameters()
 {
 	this->AttackStarted = false;	
-	this->SetTimer(this->AttackCooldownTimerHandle, &ASimpleGameCharacter::OnAttackCooldownTimerElapsed, ASimpleGameCharacter::AttackCooldownTimeSeconds);
+	this->SetTimer(&ASimpleGameCharacter::OnAttackCooldownTimerElapsed, ASimpleGameCharacter::AttackCooldownTimeSeconds);
 	this->InAttackCooldown = true;	
 }
 
@@ -146,7 +142,7 @@ void ASimpleGameCharacter::Jump()
 
 void ASimpleGameCharacter::Landed(const FHitResult& Hit)
 {
-	this->SetTimer(this->JumpCooldownTimerHandle, &ASimpleGameCharacter::OnJumpCooldownTimerElapsed, ASimpleGameCharacter::JumpCooldownTimeSeconds);
+	this->SetTimer(&ASimpleGameCharacter::OnJumpCooldownTimerElapsed, ASimpleGameCharacter::JumpCooldownTimeSeconds);
 	this->InJumpCooldown = true;
 }
 

@@ -38,11 +38,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
-	void SetTimer(FTimerHandle TimerHandle, 
-		TDelegate<void(), FNotThreadSafeNotCheckedDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate,
+	void SetTimer(
+		TDelegate<void(), FDefaultTSDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate,
 		float DurationSeconds);
-		
-	void ClearTimer(FTimerHandle TimerHandle);
 
 public:	
 	// Called every frame
@@ -111,12 +109,8 @@ private:
 	
 	const FAnimNode_StateMachine* GroundMovementStateMachine = nullptr;
 	
-	FTimerHandle JumpCooldownTimerHandle;
-	
 	bool InJumpCooldown;
-	
-	FTimerHandle AttackCooldownTimerHandle;
-		
+			
 	bool AttackStarted;
 	
 	bool InAttackCooldown;
