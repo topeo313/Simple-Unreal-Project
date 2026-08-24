@@ -24,7 +24,7 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	this->Camera->bUsePawnControlRotation = false; // No need to update camera's rotation here (since camera arm gets updated)
 	
 	// Enable/disable to get this Pawn to match/ignore the controller's pitch, yaw, roll
-	this->bUseControllerRotationPitch = true;
+	this->bUseControllerRotationPitch = false;
 	this->bUseControllerRotationYaw = false;
 	this->bUseControllerRotationRoll = false;
 	
