@@ -22,6 +22,9 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 	
 	FOnGraphStateChanged AttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
 	this->AddNativeStateExitBinding(FName("Ground Movement"), FName("Attack"), AttackExitDelegate);
+	
+	FOnGraphStateChanged JumpAttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
+	this->AddNativeStateExitBinding(FName("Air Movement"), FName("Jump Attack"), AttackExitDelegate);
 }
 
 void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -36,6 +39,7 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isFallingDown = velocity.Z < 0.0;
 	this->isPlayerMovementInputEnabled = this->GameCharacter->IsPlayerMovementInputEnabled();
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
+	this->isJumpAttackStarted = this->GameCharacter->IsJumpAttackStarted();
 	this->isAttacking = this->GameCharacter->IsAttacking();
 	
 	//UE_LOG(LogTemp, Warning, TEXT("%d"), this->isPlayerMovementInputEnabled);

@@ -31,7 +31,7 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	UCharacterMovementComponent* CharMovement = this->GetCharacterMovement();
 	CharMovement->bOrientRotationToMovement = true; // Update pawn's rotation based on direction of acceleration (based on CharacterMovement RotationRate)
 	CharMovement->RotationRate = FRotator(0.f, 540.f, 0.f);
-	CharMovement->JumpZVelocity = 400.0f;
+	CharMovement->JumpZVelocity = 380.0f;
 	CharMovement->AirControl = 0.2f;
 	
 	// Cut top speed down (Default is usually 600.0f)
@@ -59,6 +59,7 @@ void ASimpleGameCharacter::BeginPlay()
 	if (AnimInstance != nullptr)
 	{
 		this->GroundMovementStateMachine = AnimInstance->GetStateMachineInstanceFromName(FName("Ground Movement"));
+		this->AirMovementStateMachine = AnimInstance->GetStateMachineInstanceFromName(FName("Air Movement"));
 	}
 }
 
@@ -115,7 +116,8 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void ASimpleGameCharacter::ResetAttackParameters()
 {
-	this->AttackStarted = false;	
+	this->AttackStarted = false;
+	this->JumpAttackStarted = false;	
 	this->SetTimer(&ASimpleGameCharacter::OnAttackCooldownTimerElapsed, ASimpleGameCharacter::AttackCooldownTimeSeconds);
 	this->InAttackCooldown = true;	
 }
@@ -148,12 +150,13 @@ void ASimpleGameCharacter::Landed(const FHitResult& Hit)
 
 bool ASimpleGameCharacter::IsAttacking()
 {	 
-	if (this->GroundMovementStateMachine == nullptr)
+	if (this->GroundMovementStateMachine == nullptr || this->AirMovementStateMachine == nullptr)
 	{
 		return false;
 	}
 	
-	return this->GroundMovementStateMachine->GetCurrentStateName() == FName("Attack");
+	return this->GroundMovementStateMachine->GetCurrentStateName() == FName("Attack") ||
+		   this->AirMovementStateMachine->GetCurrentStateName() == FName("Jump Attack");
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
@@ -203,9 +206,17 @@ void ASimpleGameCharacter::Attack_A_Started()
 	// is both moving AND trying to attack within the attack cooldown period (i.e. rapidly pressing the attack button). We check for 
 	// both movement and the cooldown because moving while mashing the attack button confuses the state machine, so we want to be
 	// extra sure that we guard against the jittery/jumpy animations
-	bool moveAttackDuringCooldown = this->InAttackCooldown && this->IsPlayerMovementInputEnabled();
-	if (moveAttackDuringCooldown || this->GetCharacterMovement()->IsFalling())
+	if (this->InAttackCooldown && this->IsPlayerMovementInputEnabled())
 	{
+		return;
+	}
+	else if (this->GetCharacterMovement()->IsFalling())
+	{
+		if (this->AirMovementStateMachine->GetCurrentStateName() == FName("Jump Apex"))
+		{
+			this->JumpAttackStarted = true;
+		}
+		
 		return;
 	}
 

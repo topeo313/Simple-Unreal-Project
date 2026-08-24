@@ -65,6 +65,7 @@ public:
 	
 	bool IsPlayerMovementInputEnabled() const { return this->GetCharacterMovement()->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER; }
 	bool IsAttackStarted() const { return this->AttackStarted; }
+	bool IsJumpAttackStarted() const { return this->JumpAttackStarted; }
 	bool IsAttacking();
 	
 protected:
@@ -109,11 +110,15 @@ private:
 	
 	const FAnimNode_StateMachine* GroundMovementStateMachine = nullptr;
 	
+	const FAnimNode_StateMachine* AirMovementStateMachine = nullptr;
+	
 	bool InJumpCooldown;
 			
 	bool AttackStarted;
 	
 	bool InAttackCooldown;
+	
+	bool JumpAttackStarted;
 	
 	FVector2D SmoothedMovementVector;
 };

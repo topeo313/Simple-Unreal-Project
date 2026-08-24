@@ -51,5 +51,8 @@ private:
 	bool isAttackStarted;
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	bool isJumpAttackStarted;	
+	
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	bool isAttacking;
 };
