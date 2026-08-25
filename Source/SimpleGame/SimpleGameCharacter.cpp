@@ -112,6 +112,9 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::StopJumping);
 	
 	EnhancedInputComponent->BindAction(this->AttackA_Action, ETriggerEvent::Started, this, &ASimpleGameCharacter::Attack_A_Started);
+	
+	EnhancedInputComponent->BindAction(this->BlockAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::BlockStarted);
+	EnhancedInputComponent->BindAction(this->BlockAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::BlockCompleted);
 }
 
 void ASimpleGameCharacter::ResetAttackParameters()
@@ -120,6 +123,12 @@ void ASimpleGameCharacter::ResetAttackParameters()
 	this->JumpAttackStarted = false;	
 	this->SetTimer(&ASimpleGameCharacter::OnAttackCooldownTimerElapsed, ASimpleGameCharacter::AttackCooldownTimeSeconds);
 	this->InAttackCooldown = true;	
+}
+
+void ASimpleGameCharacter::ResetBlockParameters()
+{
+	this->InBlockMode = false;
+	this->BlockAnimationEnded = false;
 }
 
 void ASimpleGameCharacter::OnJumpCooldownTimerElapsed()
@@ -161,7 +170,7 @@ bool ASimpleGameCharacter::IsAttacking()
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 {
-	if (this->IsAttackStarted() || this->IsAttacking())
+	if (this->IsAttackStarted() || this->IsAttacking() || this->IsInBlockMode())
 	{
 		return;
 	}
@@ -221,4 +230,14 @@ void ASimpleGameCharacter::Attack_A_Started()
 	}
 
 	this->AttackStarted = true;
+}
+
+void ASimpleGameCharacter::BlockStarted()
+{
+	this->InBlockMode = true;
+}
+
+void ASimpleGameCharacter::BlockCompleted()
+{
+	this->BlockAnimationEnded = true;
 }

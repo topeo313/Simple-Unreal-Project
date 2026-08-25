@@ -26,6 +26,7 @@ public:
 	
 protected:
 	void OnAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);	
+	void OnBlockEndStateEnter(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);		
 		
 // Members
 private:
@@ -55,4 +56,10 @@ private:
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	bool isAttacking;
+	
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	bool isInBlockMode;	
+	
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	bool isBlockAnimationEnded;
 };

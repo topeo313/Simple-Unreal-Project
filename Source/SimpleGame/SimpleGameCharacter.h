@@ -50,6 +50,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	void ResetAttackParameters();	
+	void ResetBlockParameters();
 	
 private:
 	void OnJumpCooldownTimerElapsed();	
@@ -68,6 +69,9 @@ public:
 	bool IsJumpAttackStarted() const { return this->JumpAttackStarted; }
 	bool IsAttacking();
 	
+	bool IsInBlockMode() const { return this->InBlockMode; }
+	bool IsBlockAnimationEnded() const { return this->BlockAnimationEnded; }
+	
 protected:
 	// Handles movement in all directions
 	void Move(const FInputActionValue& Value);
@@ -77,6 +81,9 @@ protected:
 	void LookAround(const FInputActionValue& Value);
 	
 	void Attack_A_Started();
+	
+	void BlockStarted();
+	void BlockCompleted();
 	
 // Members
 protected:
@@ -94,9 +101,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction = nullptr;
 	
-	// Action to carry execute "Attack A" action
+	// Action to execute "Attack A"
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> AttackA_Action = nullptr;
+	
+	// Action to go into Block mode
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> BlockAction = nullptr;	
 		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
 	float AttackA_PlayRate = 0.8f;
@@ -119,6 +130,10 @@ private:
 	bool InAttackCooldown;
 	
 	bool JumpAttackStarted;
+	
+	bool InBlockMode;
+	
+	bool BlockAnimationEnded;
 	
 	FVector2D SmoothedMovementVector;
 };

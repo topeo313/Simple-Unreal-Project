@@ -20,11 +20,16 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 		}
 	}
 	
-	FOnGraphStateChanged AttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
-	this->AddNativeStateExitBinding(FName("Ground Movement"), FName("Attack"), AttackExitDelegate);
+	FName GroundMovement("Ground Movement");
 	
+	FOnGraphStateChanged AttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
+	this->AddNativeStateExitBinding(GroundMovement, FName("Attack"), AttackExitDelegate);
+		
 	FOnGraphStateChanged JumpAttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
 	this->AddNativeStateExitBinding(FName("Air Movement"), FName("Jump Attack"), AttackExitDelegate);
+	
+	FOnGraphStateChanged BlockEndStateEnterDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnBlockEndStateEnter);
+	this->AddNativeStateEntryBinding(GroundMovement, FName("Block End"), BlockEndStateEnterDelegate);
 }
 
 void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -41,11 +46,20 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
 	this->isJumpAttackStarted = this->GameCharacter->IsJumpAttackStarted();
 	this->isAttacking = this->GameCharacter->IsAttacking();
-	
+	this->isInBlockMode = this->GameCharacter->IsInBlockMode();
+	this->isBlockAnimationEnded = this->GameCharacter->IsBlockAnimationEnded();
+		
 	//UE_LOG(LogTemp, Warning, TEXT("%d"), this->isPlayerMovementInputEnabled);
 }
 
 void UPlayerAnimInstance::OnAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
 {
 	this->GameCharacter->ResetAttackParameters();
+}
+
+void UPlayerAnimInstance::OnBlockEndStateEnter(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
+{
+	// To ensure that GameCharacter->IsInBlockMode gets reset before we go back into the Idle state (and doesn't inadvertently trigger another Block),
+	// we reset the block parameters when we enter the Block state (instead of when we exit it)
+	this->GameCharacter->ResetBlockParameters();
 }
