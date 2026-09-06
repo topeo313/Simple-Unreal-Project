@@ -150,7 +150,7 @@ void ASimpleGameCharacter::OnBlockCooldownTimerElapsed()
 
 void ASimpleGameCharacter::Jump()
 {
-	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown || this->IsAttackStarted())
+	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown || this->IsAttackStarted() || this->IsInBlockMode())
 	{
 		return;
 	}
