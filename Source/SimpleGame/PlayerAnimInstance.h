@@ -26,7 +26,7 @@ public:
 	
 protected:
 	void OnAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);	
-	void OnBlockEndStateEnter(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);		
+	void OnBlockStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);		
 		
 // Members
 private:

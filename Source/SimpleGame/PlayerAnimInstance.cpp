@@ -28,8 +28,8 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 	FOnGraphStateChanged JumpAttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
 	this->AddNativeStateExitBinding(FName("Air Movement"), FName("Jump Attack"), AttackExitDelegate);
 	
-	FOnGraphStateChanged BlockEndStateEnterDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnBlockEndStateEnter);
-	this->AddNativeStateEntryBinding(GroundMovement, FName("Block End"), BlockEndStateEnterDelegate);
+	FOnGraphStateChanged BlockStateExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnBlockStateExit);
+	this->AddNativeStateExitBinding(GroundMovement, FName("Block"), BlockStateExitDelegate);
 }
 
 void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -57,9 +57,7 @@ void UPlayerAnimInstance::OnAttackStateExit(const FAnimNode_StateMachine& StateM
 	this->GameCharacter->ResetAttackParameters();
 }
 
-void UPlayerAnimInstance::OnBlockEndStateEnter(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
+void UPlayerAnimInstance::OnBlockStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
 {
-	// To ensure that GameCharacter->IsInBlockMode gets reset before we go back into the Idle state (and doesn't inadvertently trigger another Block),
-	// we reset the block parameters when we enter the Block state (instead of when we exit it)
 	this->GameCharacter->ResetBlockParameters();
 }

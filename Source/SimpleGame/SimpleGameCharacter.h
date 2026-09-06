@@ -26,6 +26,7 @@ private:
 	static constexpr auto MoveInterpolationSpeed = 15.0f;
 	static constexpr auto JumpCooldownTimeSeconds = 0.175f;
 	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
+	static constexpr auto BlockCooldownTimeSeconds = 0.25f;
 
 // Initialization
 public:
@@ -55,6 +56,7 @@ public:
 private:
 	void OnJumpCooldownTimerElapsed();	
 	void OnAttackCooldownTimerElapsed();
+	void OnBlockCooldownTimerElapsed();
 	
 // Properties
 public:
@@ -134,6 +136,8 @@ private:
 	bool InBlockMode;
 	
 	bool BlockAnimationEnded;
+	
+	bool InBlockCooldown;
 	
 	FVector2D SmoothedMovementVector;
 };
