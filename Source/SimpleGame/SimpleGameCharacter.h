@@ -139,5 +139,8 @@ private:
 	
 	bool InBlockCooldown;
 	
+	// Use to track the moment that the Character fully comes out of the Block blend animation
+	FAlphaBlend BlockEndBlendTracker;
+	
 	FVector2D SmoothedMovementVector;
 };

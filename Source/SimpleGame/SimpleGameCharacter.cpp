@@ -38,6 +38,10 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	CharMovement->MaxWalkSpeed = 375.0f;
 	
 	this->SmoothedMovementVector = FVector2D::ZeroVector;
+	
+	// Set these properties to match the coresponding property values in the "Blend Poses by bool" node
+	this->BlockEndBlendTracker.SetBlendTime(0.1f);
+	this->BlockEndBlendTracker.SetBlendOption(EAlphaBlendOption::HermiteCubic);
 }
 
 // Called when the game starts or when spawned
@@ -96,7 +100,16 @@ void ASimpleGameCharacter::SetTimer(
 // Called every frame
 void ASimpleGameCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime);		
+	
+	if (this->IsBlockAnimationEnded())
+	{
+		this->BlockEndBlendTracker.Update(DeltaTime);		
+		if (this->BlockEndBlendTracker.IsComplete())
+		{
+			this->ResetBlockParameters();
+		}		
+	}
 }
 
 // Called to bind functionality to input
@@ -127,6 +140,7 @@ void ASimpleGameCharacter::ResetAttackParameters()
 
 void ASimpleGameCharacter::ResetBlockParameters()
 {
+	this->BlockEndBlendTracker.Reset();
 	this->InBlockMode = false;
 	this->BlockAnimationEnded = false;
 	this->SetTimer(&ASimpleGameCharacter::OnBlockCooldownTimerElapsed, ASimpleGameCharacter::BlockCooldownTimeSeconds);
@@ -252,6 +266,12 @@ void ASimpleGameCharacter::BlockStarted()
 
 void ASimpleGameCharacter::BlockCompleted()
 {
+	if (this->InBlockCooldown)
+	{
+		return;
+	}
+
 	this->BlockAnimationEnded = true;
 	this->InBlockMode = false;
+	this->BlockEndBlendTracker.SetValueRange(this->BlockEndBlendTracker.GetBlendedValue(), 0.0f);
 }
