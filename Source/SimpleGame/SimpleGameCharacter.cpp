@@ -40,7 +40,7 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	this->SmoothedMovementVector = FVector2D::ZeroVector;
 	
 	// Set these properties to match the coresponding property values in the "Blend Poses by bool" node
-	this->BlockEndBlendTracker.SetBlendTime(0.1f);
+	this->BlockEndBlendTracker.SetBlendTime(0.15f);
 	this->BlockEndBlendTracker.SetBlendOption(EAlphaBlendOption::HermiteCubic);
 }
 
@@ -102,6 +102,7 @@ void ASimpleGameCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);		
 	
+	// Use IsBlockAnimationEnded to determine when to reset Block parameters and begin Block cooldown
 	if (this->IsBlockAnimationEnded())
 	{
 		this->BlockEndBlendTracker.Update(DeltaTime);		
@@ -273,5 +274,7 @@ void ASimpleGameCharacter::BlockCompleted()
 
 	this->BlockAnimationEnded = true;
 	this->InBlockMode = false;
+	
+	// Set the tracker to count down to 0 to determine when the transition out of Block is complete
 	this->BlockEndBlendTracker.SetValueRange(this->BlockEndBlendTracker.GetBlendedValue(), 0.0f);
 }
