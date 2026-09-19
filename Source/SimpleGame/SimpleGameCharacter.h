@@ -133,6 +133,8 @@ private:
 	
 	bool JumpAttackStarted;
 	
+	bool IsBlockCameraSet;
+	
 	bool InBlockMode;
 	
 	bool BlockAnimationEnded;

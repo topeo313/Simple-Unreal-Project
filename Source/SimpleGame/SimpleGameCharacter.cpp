@@ -100,7 +100,34 @@ void ASimpleGameCharacter::SetTimer(
 // Called every frame
 void ASimpleGameCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);		
+	Super::Tick(DeltaTime);	
+	
+	bool performingOtherAction = this->GetCharacterMovement()->IsFalling() || this->IsAttacking();	
+	if (!performingOtherAction)
+	{
+		if (this->IsInBlockMode())
+		{
+			if (this->IsBlockCameraSet)
+			{
+				this->bUseControllerRotationYaw = true;
+			}
+			else
+			{
+				this->GetCharacterMovement()->bOrientRotationToMovement = false;
+				FRotator CurControllerRotation = this->GetControlRotation();
+				FRotator DestControllerRotation = this->GetActorRotation();
+				DestControllerRotation.Pitch = -10;
+				FRotator SmoothDestRotation = FMath::RInterpTo(CurControllerRotation, DestControllerRotation,
+				                                               this->GetWorld()->GetDeltaSeconds(),
+				                                               ASimpleGameCharacter::MoveInterpolationSpeed / 2);
+				this->Controller->SetControlRotation(SmoothDestRotation);
+				if (this->GetControlRotation().Equals(DestControllerRotation, 1.0))
+				{
+					this->IsBlockCameraSet = true;
+				}
+			}
+		}
+	}
 	
 	// Use IsBlockAnimationEnded to determine when to reset Block parameters and begin Block cooldown
 	if (this->IsBlockAnimationEnded())
@@ -191,8 +218,8 @@ bool ASimpleGameCharacter::IsAttacking()
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
-{
-	if (this->IsAttackStarted() || this->IsAttacking() || this->IsInBlockMode())
+{ 
+	if (this->IsAttackStarted() || this->IsAttacking())
 	{
 		return;
 	}
@@ -207,7 +234,7 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 	}		
 		
 	if (this->Controller != nullptr)
-	{
+	{		
 		// Extract yaw rotation info
 		FRotator Rotation = this->Controller->GetControlRotation();
 		FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -228,7 +255,11 @@ void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 {
 	FVector2D TurnVector = Value.Get<FVector2D>();
 	this->AddControllerYawInput(TurnVector.X);
-	this->AddControllerPitchInput(TurnVector.Y);
+	
+	if (!this->IsBlockCameraSet)
+	{
+		this->AddControllerPitchInput(TurnVector.Y);
+	}
 }
 
 void ASimpleGameCharacter::Attack_A_Started()
@@ -267,6 +298,11 @@ void ASimpleGameCharacter::BlockStarted()
 
 void ASimpleGameCharacter::BlockCompleted()
 {
+	// Reset no matter what part of the Block state we're in
+	this->GetCharacterMovement()->bOrientRotationToMovement = true;
+	this->bUseControllerRotationYaw = false;	
+	this->IsBlockCameraSet = false;
+
 	if (this->InBlockCooldown)
 	{
 		return;
