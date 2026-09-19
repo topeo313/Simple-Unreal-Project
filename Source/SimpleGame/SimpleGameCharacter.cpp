@@ -44,6 +44,31 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	this->BlockEndBlendTracker.SetBlendOption(EAlphaBlendOption::HermiteCubic);
 }
 
+void ASimpleGameCharacter::SetTimer(
+	TDelegate<void(), FDefaultTSDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate, 
+	float DurationSeconds)
+{
+	TWeakObjectPtr<ASimpleGameCharacter> WeakThis(this);
+
+	AsyncTask(ENamedThreads::GameThread, [WeakThis, TimerDelegate, DurationSeconds]() mutable
+	{	
+		if (WeakThis.IsValid())
+		{			
+			FTimerHandle TimerHandle;
+				
+			FTimerDelegate SafeDelegate;
+			SafeDelegate.BindUObject(WeakThis.Get(), TimerDelegate);
+	
+			WeakThis->GetWorldTimerManager().SetTimer(
+				TimerHandle,
+				SafeDelegate,
+				DurationSeconds,
+				false
+			);
+		}			
+	});
+}
+
 // Called when the game starts or when spawned
 void ASimpleGameCharacter::BeginPlay()
 {
@@ -70,31 +95,6 @@ void ASimpleGameCharacter::BeginPlay()
 void ASimpleGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) 
 {
 	Super::EndPlay(EndPlayReason);		
-}
-
-void ASimpleGameCharacter::SetTimer(
-	TDelegate<void(), FDefaultTSDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate, 
-	float DurationSeconds)
-{
-	TWeakObjectPtr<ASimpleGameCharacter> WeakThis(this);
-
-	AsyncTask(ENamedThreads::GameThread, [WeakThis, TimerDelegate, DurationSeconds]() mutable
-	{	
-		if (WeakThis.IsValid())
-		{			
-			FTimerHandle TimerHandle;
-				
-			FTimerDelegate SafeDelegate;
-			SafeDelegate.BindUObject(WeakThis.Get(), TimerDelegate);
-	
-			WeakThis->GetWorldTimerManager().SetTimer(
-				TimerHandle,
-				SafeDelegate,
-				DurationSeconds,
-				false
-			);
-		}			
-	});
 }
 
 // Called every frame
@@ -206,7 +206,7 @@ void ASimpleGameCharacter::Landed(const FHitResult& Hit)
 	this->InJumpCooldown = true;
 }
 
-bool ASimpleGameCharacter::IsAttacking()
+bool ASimpleGameCharacter::IsAttacking() const
 {	 
 	if (this->GroundMovementStateMachine == nullptr || this->AirMovementStateMachine == nullptr)
 	{
@@ -226,7 +226,7 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 
 	// Extract 2D axis data (x and y) 
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	
+		
 	// Check to ensure that input vector hits a certain threshold before triggering (e.g. for detecting left joystick movement)
 	if (MovementVector.Size() < ASimpleGameCharacter::MoveThreshold)
 	{

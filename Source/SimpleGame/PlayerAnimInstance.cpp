@@ -43,6 +43,7 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isInAir = this->GameCharacterMovementComponent->IsFalling();
 	this->isFallingDown = velocity.Z < 0.0;
 	this->isPlayerMovementInputEnabled = this->GameCharacter->IsPlayerMovementInputEnabled();
+	this->currentMovementVector = this->GameCharacter->GetCurrentMovementVector();
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
 	this->isJumpAttackStarted = this->GameCharacter->IsJumpAttackStarted();
 	this->isAttacking = this->GameCharacter->IsAttacking();

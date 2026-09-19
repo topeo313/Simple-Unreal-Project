@@ -35,15 +35,15 @@ public:
 
 // Operations
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	
 	void SetTimer(
 		TDelegate<void(), FDefaultTSDelegateUserPolicy>::TMethodPtr<ASimpleGameCharacter> TimerDelegate,
 		float DurationSeconds);
 
 public:	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -66,10 +66,11 @@ public:
 	virtual void Jump() override;	
 	virtual void Landed(const FHitResult& Hit) override;
 	
+	FVector2D GetCurrentMovementVector() const { return this->SmoothedMovementVector; };
 	bool IsPlayerMovementInputEnabled() const { return this->GetCharacterMovement()->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER; }
 	bool IsAttackStarted() const { return this->AttackStarted; }
 	bool IsJumpAttackStarted() const { return this->JumpAttackStarted; }
-	bool IsAttacking();
+	bool IsAttacking() const;
 	
 	bool IsInBlockMode() const { return this->InBlockMode; }
 	bool IsBlockAnimationEnded() const { return this->BlockAnimationEnded; }
