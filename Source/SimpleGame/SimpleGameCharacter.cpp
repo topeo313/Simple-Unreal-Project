@@ -215,19 +215,20 @@ void ASimpleGameCharacter::Jump()
 		{
 			if (!this->InDodgeCooldown)
 			{
-				if (this->DodgeLeftMontage != nullptr)
-				{
-					this->GetAnimInstance()->Montage_Play(this->DodgeLeftMontage);
+				// Get dodge vector in local space, then apply rotation quaternion to transform it into world space
+				FRotator ActorYawRotation(0, this->GetActorRotation().Yaw, 0);
+				FQuat RotationQuat = ActorYawRotation.Quaternion();			
+				FVector DodgeVector(0, -500, 150);
+				DodgeVector = RotationQuat * DodgeVector;	
 					
-					// Get dodge vector in local space, then apply rotation quaternion to transform it into world space
-					FRotator ActorYawRotation(0, this->GetActorRotation().Yaw, 0);
-					FQuat RotationQuat = ActorYawRotation.Quaternion();			
-					FVector DodgeVector(0, -500, 150);
-					DodgeVector = RotationQuat * DodgeVector;		
-					this->LaunchCharacter(DodgeVector, false, false);
-					this->InDodgeMode = true;
-					return;
+				if (!this->IsPlayerMovementInputEnabled())
+				{
+					this->SmoothedMovementVector = FVector2D(-1.0, 0);
 				}
+				
+				this->LaunchCharacter(DodgeVector, false, false);
+				this->InDodgeMode = true;
+				return;
 			}
 		}
 	}
@@ -266,8 +267,7 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 	}
 
 	// Extract 2D axis data (x and y) 	
-	FVector2D MovementVector = this->IsInDodgeMode() ? FVector2D(0, 0) : Value.Get<FVector2D>();
-	this->SmoothedMovementVector = this->IsInDodgeMode() ? FVector2D(0, 0) : this->SmoothedMovementVector;
+	FVector2D MovementVector =  Value.Get<FVector2D>();
 		
 	// Check to ensure that input vector hits a certain threshold before triggering (e.g. for detecting left joystick movement)
 	if (MovementVector.Size() < ASimpleGameCharacter::MoveThreshold)

@@ -119,10 +119,6 @@ protected:
 	// Action to go into Block mode
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> BlockAction = nullptr;	
-	
-	// Dodge actions
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UAnimMontage> DodgeLeftMontage = nullptr;	
 			
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
