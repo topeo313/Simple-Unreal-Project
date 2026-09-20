@@ -27,6 +27,7 @@ private:
 	static constexpr auto JumpCooldownTimeSeconds = 0.175f;
 	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
 	static constexpr auto BlockCooldownTimeSeconds = 0.225f;
+	static constexpr auto DodgeCooldownTimeSeconds = 0.750f;
 
 // Initialization
 public:
@@ -52,11 +53,13 @@ public:
 	
 	void ResetAttackParameters();	
 	void ResetBlockParameters();
+	void ResetDodgeParameters();
 	
 private:
 	void OnJumpCooldownTimerElapsed();	
 	void OnAttackCooldownTimerElapsed();
 	void OnBlockCooldownTimerElapsed();
+	void OnDodgeCooldownTimerElapsed();
 	
 // Properties
 public:
@@ -66,7 +69,7 @@ public:
 	virtual void Jump() override;	
 	virtual void Landed(const FHitResult& Hit) override;
 	
-	FVector2D GetCurrentMovementVector() const { return this->SmoothedMovementVector; };
+	FVector2D GetCurrentInputMovementVector() const { return this->SmoothedMovementVector; };
 	bool IsPlayerMovementInputEnabled() const { return this->GetCharacterMovement()->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER; }
 	bool IsAttackStarted() const { return this->AttackStarted; }
 	bool IsJumpAttackStarted() const { return this->JumpAttackStarted; }
@@ -74,6 +77,8 @@ public:
 	
 	bool IsInBlockMode() const { return this->InBlockMode; }
 	bool IsBlockAnimationEnded() const { return this->BlockAnimationEnded; }
+	
+	bool IsInDodgeMode() const { return this->InDodgeMode; }
 	
 protected:
 	// Handles movement in all directions
@@ -108,12 +113,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> AttackA_Action = nullptr;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
+	float AttackA_PlayRate = 0.8f;
+	
 	// Action to go into Block mode
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> BlockAction = nullptr;	
-		
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
-	float AttackA_PlayRate = 0.8f;
+	
+	// Dodge actions
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UAnimMontage> DodgeLeftMontage = nullptr;	
 			
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -144,6 +153,10 @@ private:
 	
 	// Use to track the moment that the Character fully comes out of the Block blend animation
 	FAlphaBlend BlockEndBlendTracker;
+	
+	bool InDodgeMode;
+	
+	bool InDodgeCooldown;
 	
 	FVector2D SmoothedMovementVector;
 };

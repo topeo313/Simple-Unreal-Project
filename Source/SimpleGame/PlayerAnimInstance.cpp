@@ -43,12 +43,13 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isInAir = this->GameCharacterMovementComponent->IsFalling();
 	this->isFallingDown = velocity.Z < 0.0;
 	this->isPlayerMovementInputEnabled = this->GameCharacter->IsPlayerMovementInputEnabled();
-	this->currentMovementVector = this->GameCharacter->GetCurrentMovementVector();
+	this->currentInputMovementVector = this->GameCharacter->GetCurrentInputMovementVector();
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
 	this->isJumpAttackStarted = this->GameCharacter->IsJumpAttackStarted();
 	this->isAttacking = this->GameCharacter->IsAttacking();
 	this->isInBlockMode = this->GameCharacter->IsInBlockMode();
 	this->isBlockAnimationEnded = this->GameCharacter->IsBlockAnimationEnded();
+	this->isInDodgeMode = this->GameCharacter->IsInDodgeMode();
 		
 	//UE_LOG(LogTemp, Warning, TEXT("%d"), this->isPlayerMovementInputEnabled);
 }

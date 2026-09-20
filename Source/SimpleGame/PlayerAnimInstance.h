@@ -43,7 +43,7 @@ private:
 	bool isPlayerMovementInputEnabled;	
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
-	FVector2D currentMovementVector;
+	FVector2D currentInputMovementVector;
 		
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	bool isInAir;
@@ -65,4 +65,7 @@ private:
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	bool isBlockAnimationEnded;
+	
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	bool isInDodgeMode;
 };

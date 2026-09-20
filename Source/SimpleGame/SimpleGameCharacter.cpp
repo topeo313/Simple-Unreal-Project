@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputMappingContext.h"
+#include "LoggerHelper.h"
 #include "SimpleGameCharacter.h"
 
 // Sets default values
@@ -175,6 +176,13 @@ void ASimpleGameCharacter::ResetBlockParameters()
 	this->InBlockCooldown = true;
 }
 
+void ASimpleGameCharacter::ResetDodgeParameters()
+{
+	this->InDodgeMode = false;	
+	this->SetTimer(&ASimpleGameCharacter::OnDodgeCooldownTimerElapsed, ASimpleGameCharacter::DodgeCooldownTimeSeconds);
+	this->InDodgeCooldown = true;	
+}
+
 void ASimpleGameCharacter::OnJumpCooldownTimerElapsed()
 {
 	this->InJumpCooldown = false;
@@ -190,11 +198,38 @@ void ASimpleGameCharacter::OnBlockCooldownTimerElapsed()
 	this->InBlockCooldown = false;
 }
 
+void ASimpleGameCharacter::OnDodgeCooldownTimerElapsed()
+{
+	this->InDodgeCooldown = false;
+}
+
 void ASimpleGameCharacter::Jump()
 {
-	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown || this->IsAttackStarted() || this->IsInBlockMode())
+	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown || this->IsAttackStarted() || this->IsInDodgeMode() || this->InDodgeCooldown)
 	{
 		return;
+	}
+	else if (this->IsInBlockMode())
+	{
+		if (this->GetAnimInstance() != nullptr)
+		{
+			if (!this->InDodgeCooldown)
+			{
+				if (this->DodgeLeftMontage != nullptr)
+				{
+					this->GetAnimInstance()->Montage_Play(this->DodgeLeftMontage);
+					
+					// Get dodge vector in local space, then apply rotation quaternion to transform it into world space
+					FRotator ActorYawRotation(0, this->GetActorRotation().Yaw, 0);
+					FQuat RotationQuat = ActorYawRotation.Quaternion();			
+					FVector DodgeVector(0, -500, 150);
+					DodgeVector = RotationQuat * DodgeVector;		
+					this->LaunchCharacter(DodgeVector, false, false);
+					this->InDodgeMode = true;
+					return;
+				}
+			}
+		}
 	}
 	
 	Super::Jump();
@@ -204,6 +239,12 @@ void ASimpleGameCharacter::Landed(const FHitResult& Hit)
 {
 	this->SetTimer(&ASimpleGameCharacter::OnJumpCooldownTimerElapsed, ASimpleGameCharacter::JumpCooldownTimeSeconds);
 	this->InJumpCooldown = true;
+	
+	// Need to check for Dodge cooldown to ensure that Dodge parameters don't get reset each time we land
+	if (!this->InDodgeCooldown)
+	{
+		this->ResetDodgeParameters();
+	}
 }
 
 bool ASimpleGameCharacter::IsAttacking() const
@@ -224,8 +265,9 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 		return;
 	}
 
-	// Extract 2D axis data (x and y) 
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	// Extract 2D axis data (x and y) 	
+	FVector2D MovementVector = this->IsInDodgeMode() ? FVector2D(0, 0) : Value.Get<FVector2D>();
+	this->SmoothedMovementVector = this->IsInDodgeMode() ? FVector2D(0, 0) : this->SmoothedMovementVector;
 		
 	// Check to ensure that input vector hits a certain threshold before triggering (e.g. for detecting left joystick movement)
 	if (MovementVector.Size() < ASimpleGameCharacter::MoveThreshold)
@@ -243,7 +285,7 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 		FRotationMatrix RotationMatrix = FRotationMatrix(YawRotation);
 		FVector ForwardDirection = RotationMatrix.GetUnitAxis(EAxis::X); // In Unreal, X is forward/backward
 		FVector RightDirection = RotationMatrix.GetUnitAxis(EAxis::Y); // In Unreal, Y is left/right
-		
+				
 		// To keep movement smooth, interpolate between the current movement vector and the calculated movement vector
 		this->SmoothedMovementVector = FMath::Vector2DInterpTo(this->SmoothedMovementVector, MovementVector, this->GetWorld()->GetDeltaSeconds(), ASimpleGameCharacter::MoveInterpolationSpeed);
 		this->AddMovementInput(ForwardDirection, this->SmoothedMovementVector.Y); // In Unreal, Y is where we choose to store W/S movement (hence why we swizzle in the InputMappingContext) 
