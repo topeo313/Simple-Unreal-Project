@@ -153,7 +153,7 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::Jump);
 	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::StopJumping);
 	
-	EnhancedInputComponent->BindAction(this->AttackA_Action, ETriggerEvent::Started, this, &ASimpleGameCharacter::Attack_A_Started);
+	EnhancedInputComponent->BindAction(this->LeftGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::LeftGamepadStarted);
 	
 	EnhancedInputComponent->BindAction(this->BlockAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::BlockStarted);
 	EnhancedInputComponent->BindAction(this->BlockAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::BlockCompleted);
@@ -308,7 +308,7 @@ void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 	}
 }
 
-void ASimpleGameCharacter::Attack_A_Started()
+void ASimpleGameCharacter::LeftGamepadStarted()
 {
 	// To prevent the character animations from looking stuttery or jumpy, we avoid going into the attack state if the character
 	// is both moving AND trying to attack within the attack cooldown period (i.e. rapidly pressing the attack button). We check for 

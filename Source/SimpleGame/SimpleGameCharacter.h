@@ -92,7 +92,7 @@ protected:
 	// Rotate based on mouse Y movement or right gamepad Y movement
 	void LookAround(const FInputActionValue& Value);
 	
-	void Attack_A_Started();
+	void LeftGamepadStarted();
 	
 	void BlockStarted();
 	void BlockCompleted();
@@ -113,9 +113,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction = nullptr;
 	
-	// Action to execute "Attack A"
+	// Execute actions associated with the Left Gamepad button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> AttackA_Action = nullptr;
+	TObjectPtr<UInputAction> LeftGamepadAction = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
 	float AttackA_PlayRate = 0.8f;
