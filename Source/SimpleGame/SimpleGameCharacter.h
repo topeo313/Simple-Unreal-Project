@@ -70,7 +70,6 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraArm() const { return this->CameraArm;}	
 	FORCEINLINE UAnimInstance* GetAnimInstance() const { return this->GetMesh()->GetAnimInstance(); }
 	
-	virtual void Jump() override;	
 	virtual void Landed(const FHitResult& Hit) override;
 	
 	FVector2D GetCurrentInputMovementVector() const { return this->SmoothedMovementVector; };
@@ -92,6 +91,9 @@ protected:
 	// Rotate based on mouse Y movement or right gamepad Y movement
 	void LookAround(const FInputActionValue& Value);
 	
+	void BottomGamepadStarted();
+	void BottomGamepadCompleted();
+	
 	void LeftGamepadStarted();
 	
 	void BlockStarted();
@@ -109,9 +111,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> LookAroundAction = nullptr;
 	
-	// Action to turn (yaw) and look up/down
+	// Execute actions associated with the Bottom Gamepad button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> JumpAction = nullptr;
+	TObjectPtr<UInputAction> BottomGamepadAction = nullptr;
 	
 	// Execute actions associated with the Left Gamepad button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")

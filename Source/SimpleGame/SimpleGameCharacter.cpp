@@ -150,8 +150,8 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(this->MoveAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::Move);
 	EnhancedInputComponent->BindAction(this->LookAroundAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::LookAround);
 	
-	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::Jump);
-	EnhancedInputComponent->BindAction(this->JumpAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::StopJumping);
+	EnhancedInputComponent->BindAction(this->BottomGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::BottomGamepadStarted);
+	EnhancedInputComponent->BindAction(this->BottomGamepadAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::BottomGamepadCompleted);
 	
 	EnhancedInputComponent->BindAction(this->LeftGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::LeftGamepadStarted);
 	
@@ -201,43 +201,6 @@ void ASimpleGameCharacter::OnBlockCooldownTimerElapsed()
 void ASimpleGameCharacter::OnDodgeCooldownTimerElapsed()
 {
 	this->InDodgeCooldown = false;
-}
-
-void ASimpleGameCharacter::Jump()
-{
-	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown || this->IsAttackStarted() || this->IsInDodgeMode() || this->InDodgeCooldown)
-	{
-		return;
-	}
-	else if (this->IsInBlockMode())
-	{
-		if (this->GetAnimInstance() != nullptr)
-		{
-			if (!this->InDodgeCooldown)
-			{			
-				// If we're not moving, randomize Dodge direction
-				if (!this->IsPlayerMovementInputEnabled())
-				{
-					float x = FMath::RandBool() ? -1 : 1;
-					float y = FMath::RandRange(0, -1);
-					this->SmoothedMovementVector = FVector2D(x, y);
-				}			
-			
-				// Get dodge vector in local space, then apply rotation quaternion to transform it into world space
-				FRotator ActorYawRotation(0, this->GetActorRotation().Yaw, 0);
-				FQuat RotationQuat = ActorYawRotation.Quaternion();			
-				FVector DodgeVector(this->SmoothedMovementVector.Y * ASimpleGameCharacter::DodgeMoveFactor, 
-				this->SmoothedMovementVector.X * ASimpleGameCharacter::DodgeMoveFactor, ASimpleGameCharacter::DodgeJumpFactor);
-				DodgeVector = RotationQuat * DodgeVector;	
-									
-				this->LaunchCharacter(DodgeVector, false, false);
-				this->InDodgeMode = true;
-				return;
-			}
-		}
-	}
-	
-	Super::Jump();
 }
 
 void ASimpleGameCharacter::Landed(const FHitResult& Hit)
@@ -330,6 +293,48 @@ void ASimpleGameCharacter::LeftGamepadStarted()
 	}
 
 	this->AttackStarted = true;
+}
+
+void ASimpleGameCharacter::BottomGamepadStarted()
+{
+	if (this->GetCharacterMovement()->IsFalling() || this->InJumpCooldown || this->IsAttackStarted() || this->IsInDodgeMode() || this->InDodgeCooldown)
+	{
+		return;
+	}
+	else if (this->IsInBlockMode())
+	{
+		if (this->GetAnimInstance() != nullptr)
+		{
+			if (!this->InDodgeCooldown)
+			{			
+				// If we're not moving, randomize Dodge direction
+				if (!this->IsPlayerMovementInputEnabled())
+				{
+					float x = FMath::RandBool() ? -1 : 1;
+					float y = FMath::RandRange(0, -1);
+					this->SmoothedMovementVector = FVector2D(x, y);
+				}			
+			
+				// Get dodge vector in local space, then apply rotation quaternion to transform it into world space
+				FRotator ActorYawRotation(0, this->GetActorRotation().Yaw, 0);
+				FQuat RotationQuat = ActorYawRotation.Quaternion();			
+				FVector DodgeVector(this->SmoothedMovementVector.Y * ASimpleGameCharacter::DodgeMoveFactor, 
+				this->SmoothedMovementVector.X * ASimpleGameCharacter::DodgeMoveFactor, ASimpleGameCharacter::DodgeJumpFactor);
+				DodgeVector = RotationQuat * DodgeVector;	
+									
+				this->LaunchCharacter(DodgeVector, false, false);
+				this->InDodgeMode = true;
+				return;
+			}
+		}
+	}
+	
+	this->Jump();
+}
+
+void ASimpleGameCharacter::BottomGamepadCompleted()
+{
+	this->StopJumping();
 }
 
 void ASimpleGameCharacter::BlockStarted()
