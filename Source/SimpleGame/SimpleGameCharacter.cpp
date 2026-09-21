@@ -214,18 +214,22 @@ void ASimpleGameCharacter::Jump()
 		if (this->GetAnimInstance() != nullptr)
 		{
 			if (!this->InDodgeCooldown)
-			{
+			{			
+				// If we're not moving, randomize Dodge direction
+				if (!this->IsPlayerMovementInputEnabled())
+				{
+					float x = FMath::RandBool() ? -1 : 1;
+					float y = FMath::RandRange(0, -1);
+					this->SmoothedMovementVector = FVector2D(x, y);
+				}			
+			
 				// Get dodge vector in local space, then apply rotation quaternion to transform it into world space
 				FRotator ActorYawRotation(0, this->GetActorRotation().Yaw, 0);
 				FQuat RotationQuat = ActorYawRotation.Quaternion();			
-				FVector DodgeVector(0, -500, 150);
+				FVector DodgeVector(this->SmoothedMovementVector.Y * ASimpleGameCharacter::DodgeMoveFactor, 
+				this->SmoothedMovementVector.X * ASimpleGameCharacter::DodgeMoveFactor, ASimpleGameCharacter::DodgeJumpFactor);
 				DodgeVector = RotationQuat * DodgeVector;	
-					
-				if (!this->IsPlayerMovementInputEnabled())
-				{
-					this->SmoothedMovementVector = FVector2D(-1.0, 0);
-				}
-				
+									
 				this->LaunchCharacter(DodgeVector, false, false);
 				this->InDodgeMode = true;
 				return;

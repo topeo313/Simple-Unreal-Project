@@ -24,10 +24,14 @@ class SIMPLEGAME_API ASimpleGameCharacter : public ACharacter
 private:
 	static constexpr auto MoveThreshold = 0.78f; // Ensures that left joystick movement only occurs above a certain threshold
 	static constexpr auto MoveInterpolationSpeed = 15.0f;
+	
 	static constexpr auto JumpCooldownTimeSeconds = 0.175f;
 	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
 	static constexpr auto BlockCooldownTimeSeconds = 0.225f;
 	static constexpr auto DodgeCooldownTimeSeconds = 0.750f;
+	
+	static constexpr auto DodgeMoveFactor = 500;
+	static constexpr auto DodgeJumpFactor = 150;
 
 // Initialization
 public:
