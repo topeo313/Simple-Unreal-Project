@@ -4,6 +4,7 @@
 
 #include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
+#include "DodgeDirection.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
@@ -28,7 +29,7 @@ private:
 	static constexpr auto JumpCooldownTimeSeconds = 0.175f;
 	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
 	static constexpr auto BlockCooldownTimeSeconds = 0.225f;
-	static constexpr auto DodgeCooldownTimeSeconds = 0.750f;
+	static constexpr auto DodgeCooldownTimeSeconds = 0.5f;
 	
 	static constexpr auto DodgeMoveFactor = 500;
 	static constexpr auto DodgeJumpFactor = 150;
@@ -78,6 +79,7 @@ public:
 	bool IsJumpAttackStarted() const { return this->JumpAttackStarted; }
 	bool IsAttacking() const;
 	
+	bool IsInRotationForBlock() const { return this->IsRotatingForBlock; }
 	bool IsInBlockMode() const { return this->InBlockMode; }
 	bool IsBlockAnimationEnded() const { return this->BlockAnimationEnded; }
 	
@@ -96,8 +98,16 @@ protected:
 	
 	void LeftGamepadStarted();
 	
+	void TopGamepadStarted();
+	
+	void RightGamepadStarted();
+	
 	void BlockStarted();
 	void BlockCompleted();
+	void StartBlockAnimation();
+	void StopBlockAnimation();
+	
+	void CheckForDodge(DodgeDirection dodgeDirection);
 	
 // Members
 protected:
@@ -118,6 +128,14 @@ protected:
 	// Execute actions associated with the Left Gamepad button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> LeftGamepadAction = nullptr;
+	
+	// Execute actions associated with the Top Gamepad button
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> TopGamepadAction = nullptr;
+	
+	// Execute actions associated with the Right Gamepad button
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> RightGamepadAction = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
 	float AttackA_PlayRate = 0.8f;
@@ -145,6 +163,8 @@ private:
 	
 	bool JumpAttackStarted;
 	
+	bool IsRotatingForBlock;
+	
 	bool IsBlockCameraSet;
 	
 	bool InBlockMode;
@@ -152,6 +172,8 @@ private:
 	bool BlockAnimationEnded;
 	
 	bool InBlockCooldown;
+	
+	bool IsBlockManuallyStarted;
 	
 	// Use to track the moment that the Character fully comes out of the Block blend animation
 	FAlphaBlend BlockEndBlendTracker;

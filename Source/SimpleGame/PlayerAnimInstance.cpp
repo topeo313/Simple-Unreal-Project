@@ -47,11 +47,12 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
 	this->isJumpAttackStarted = this->GameCharacter->IsJumpAttackStarted();
 	this->isAttacking = this->GameCharacter->IsAttacking();
+	this->isRotatingForBlock = this->GameCharacter->IsInRotationForBlock();
 	this->isInBlockMode = this->GameCharacter->IsInBlockMode();
 	this->isBlockAnimationEnded = this->GameCharacter->IsBlockAnimationEnded();
 	this->isInDodgeMode = this->GameCharacter->IsInDodgeMode();
 		
-	//UE_LOG(LogTemp, Warning, TEXT("%d"), this->isPlayerMovementInputEnabled);
+	//UE_LOG(LogTemp, Warning, TEXT("%d"), this->isRotatingForBlock);
 }
 
 void UPlayerAnimInstance::OnAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
