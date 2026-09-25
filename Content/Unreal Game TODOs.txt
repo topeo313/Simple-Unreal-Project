@@ -1,6 +1,4 @@
 Unreal Game TODOs:
--Refine Dodge movement (maybe increase jump Dodge Jump Height?) (B button)
-	-Ensure that when In-Place Dodge is performed, player just jerks back (i.e. opposite direction of forward vector)
 -Add power attack (Y button)
 	-Consider getting rid of jump attack (A + X)
 -Add combo striking
