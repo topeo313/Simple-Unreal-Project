@@ -183,4 +183,6 @@ private:
 	bool InDodgeCooldown;
 	
 	FVector2D SmoothedMovementVector;
+	
+	double PrevControlYaw;
 };

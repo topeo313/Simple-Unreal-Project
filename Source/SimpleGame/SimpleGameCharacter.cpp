@@ -37,12 +37,13 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	
 	// Cut top speed down (Default is usually 600.0f)
 	CharMovement->MaxWalkSpeed = 375.0f;
-	
-	this->SmoothedMovementVector = FVector2D::ZeroVector;
-	
+		
 	// Set these properties to match the coresponding property values in the "Blend Poses by bool" node
 	this->BlockEndBlendTracker.SetBlendTime(0.15f);
 	this->BlockEndBlendTracker.SetBlendOption(EAlphaBlendOption::HermiteCubic);
+	
+	this->SmoothedMovementVector = FVector2D::ZeroVector;
+	this->PrevControlYaw = this->GetControlRotation().Yaw;
 }
 
 void ASimpleGameCharacter::SetTimer(
@@ -111,6 +112,11 @@ void ASimpleGameCharacter::Tick(float DeltaTime)
 			if (this->IsBlockCameraSet)
 			{
 				this->bUseControllerRotationYaw = true;
+				
+				// Trigger foot movement (i.e. set IsRotatingForBlock to true) only when we rotate
+				double CurControlYaw = this->GetControlRotation().Yaw;
+				this->IsRotatingForBlock = !FMath::IsNearlyEqual(CurControlYaw, this->PrevControlYaw);
+				this->PrevControlYaw = CurControlYaw;	
 			}
 			else
 			{
@@ -138,7 +144,7 @@ void ASimpleGameCharacter::Tick(float DeltaTime)
 					this->IsRotatingForBlock = false;
 					this->IsBlockCameraSet = true;
 				}				
-			}
+			}		
 		}
 	}
 	
@@ -284,9 +290,9 @@ void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 
 void ASimpleGameCharacter::LookAround(const FInputActionValue& Value)
 {
-	FVector2D TurnVector = Value.Get<FVector2D>();
+	FVector2D TurnVector = Value.Get<FVector2D>();	
 	this->AddControllerYawInput(TurnVector.X);
-	
+		
 	if (!this->IsBlockCameraSet)
 	{
 		this->AddControllerPitchInput(TurnVector.Y);
@@ -385,8 +391,8 @@ void ASimpleGameCharacter::StopBlockAnimation()
 
 void ASimpleGameCharacter::CheckForDodge(DodgeDirection dodgeDirection)
 {
-	bool isMovementWeak = this->IsPlayerMovementInputEnabled() && this->GetCurrentInputMovementVector().Size() < ASimpleGameCharacter::MoveThreshold;
-	if (this->GetCharacterMovement()->IsFalling() || this->IsAttacking() || isMovementWeak)
+	bool isMovementInBlock = this->IsPlayerMovementInputEnabled() && this->IsInBlockMode();
+	if (this->GetCharacterMovement()->IsFalling() || this->IsAttacking() || isMovementInBlock)
 	{
 		return;
 	}
@@ -395,24 +401,22 @@ void ASimpleGameCharacter::CheckForDodge(DodgeDirection dodgeDirection)
 	{			
 		this->StartBlockAnimation();
 	
-		// If we're not moving, randomize Dodge direction
-		if (!this->IsPlayerMovementInputEnabled())
-		{
-			this->SmoothedMovementVector =
-				dodgeDirection == DodgeDirection::Back ? FVector2D(0, -1) :
-				dodgeDirection == DodgeDirection::Left ? FVector2D(-1, 0) :
-				dodgeDirection == DodgeDirection::Front ? FVector2D(0, 1) :
-				dodgeDirection == DodgeDirection::Right ? FVector2D(1, 0) :
-				FVector2D(0, 0);
-		}			
+		this->SmoothedMovementVector =
+			dodgeDirection == DodgeDirection::Back ? FVector2D(0, -1) :
+			dodgeDirection == DodgeDirection::Left ? FVector2D(-1, 0) :
+			dodgeDirection == DodgeDirection::Front ? FVector2D(0, 1) :
+			dodgeDirection == DodgeDirection::Right ? FVector2D(1, 0) :
+			FVector2D(0, 0);		
 		
 		// Get dodge vector in local space, then apply rotation quaternion to transform it into world space
-		FRotator ActorYawRotation(0, this->GetActorRotation().Yaw, 0);
-		FQuat RotationQuat = ActorYawRotation.Quaternion();			
-		FVector DodgeVector(this->SmoothedMovementVector.Y * ASimpleGameCharacter::DodgeMoveFactor, 
-		this->SmoothedMovementVector.X * ASimpleGameCharacter::DodgeMoveFactor, ASimpleGameCharacter::DodgeJumpFactor);
-		DodgeVector = RotationQuat * DodgeVector;	
-								
+		FVector LocalForwardVector = this->GetActorForwardVector();
+		LocalForwardVector.Normalize();
+		
+		FVector DodgeVector = -LocalForwardVector;
+		DodgeVector.X *= ASimpleGameCharacter::DodgeMoveFactor;
+		DodgeVector.Y *= ASimpleGameCharacter::DodgeMoveFactor;
+		DodgeVector.Z = ASimpleGameCharacter::DodgeJumpFactor;
+		
 		this->LaunchCharacter(DodgeVector, false, false);
 		this->InDodgeMode = true;
 	}

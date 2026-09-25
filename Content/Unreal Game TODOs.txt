@@ -1,0 +1,42 @@
+Unreal Game TODOs:
+-Refine Dodge movement (maybe increase jump Dodge Jump Height?) (B button)
+	-Get rid of block-based Dodge. Instead, use radius-based dodge (described below)
+	-Ensure that when In-Place Dodge is performed, player just jerks back (i.e. opposite direction of forward vector)
+-Add power attack (Y button)
+	-Consider getting rid of jump attack (A + X)
+-Add combo striking
+-Work on Grux (or whoever ends up being the enemy)
+	-Use version with lava textures (can his texture color be changed to green?)
+	-Animations
+	-State Machine
+	-AI
+-Work on Player/Enemy combat
+	-Collisions
+	-Hit animations
+	-Death animations
+-Implement radius-based Dodge
+	-When dodge is clicked, look at incoming attacks in radius
+		-If incoming enemy attack is a basic melee attack, dodge backwards
+		-If incoming enemy attack is a special attack straight down the middle, dodge to the left/right
+-Work on actual Level (Megascans package?)
+	-Confirm if the green mist can be changed to red
+	-Figure out where to place dragon
+-Work on dragon scene
+	-See if there's a package that can be used to control the camera and move it from the dragon's spot to the main fighting area
+-Add player and enemy to main fighting scene area
+-Main menu/instructions/documentation
+
+
+
+
+Generic Block Mode Code:
+
+	if (this->IsInBlockMode())
+	{
+		if (!this->InDodgeCooldown)
+		{			
+			this->CheckForDodge(DodgeDirection::Right);
+		}
+		
+		return;
+	}
