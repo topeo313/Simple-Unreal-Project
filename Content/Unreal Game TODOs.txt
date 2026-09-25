@@ -1,7 +1,9 @@
 Unreal Game TODOs:
 -Add power attack (Y button)
+	*Greystone Animation: Ability_R
 	-Consider getting rid of jump attack (A + X)
 -Add combo striking
+	-Incorporate other Greystone animation (Ability_E, Attack_B, Attack_C, Attack_RMB)
 -Work on Grux (or whoever ends up being the enemy)
 	-Use version with lava textures (can his texture color be changed to green?)
 	-Animations
@@ -16,6 +18,8 @@ Unreal Game TODOs:
 		-If incoming enemy attack is a basic melee attack, dodge backwards
 		-If incoming enemy attack is a special attack straight down the middle, dodge to the left/right
 -Work on actual Level (Megascans package?)
+	-Add Greystone's Ability_Q for opening pose
+	-Find corresponding opening pose for Grux/enemy (should they jump out of green mist first?)
 	-Confirm if the green mist can be changed to red
 	-Figure out where to place dragon
 -Work on dragon scene
