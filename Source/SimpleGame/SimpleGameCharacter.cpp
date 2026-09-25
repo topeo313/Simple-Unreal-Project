@@ -413,8 +413,9 @@ void ASimpleGameCharacter::CheckForDodge(DodgeDirection dodgeDirection)
 		LocalForwardVector.Normalize();
 		
 		FVector DodgeVector = -LocalForwardVector;
-		DodgeVector.X *= ASimpleGameCharacter::DodgeMoveFactor;
-		DodgeVector.Y *= ASimpleGameCharacter::DodgeMoveFactor;
+		double DodgeFactor = ASimpleGameCharacter::DodgeMoveFactor + this->GetVelocity().Size2D();
+		DodgeVector.X *= DodgeFactor;
+		DodgeVector.Y *= DodgeFactor;
 		DodgeVector.Z = ASimpleGameCharacter::DodgeJumpFactor;
 		
 		this->LaunchCharacter(DodgeVector, false, false);

@@ -1,6 +1,5 @@
 Unreal Game TODOs:
 -Refine Dodge movement (maybe increase jump Dodge Jump Height?) (B button)
-	-Get rid of block-based Dodge. Instead, use radius-based dodge (described below)
 	-Ensure that when In-Place Dodge is performed, player just jerks back (i.e. opposite direction of forward vector)
 -Add power attack (Y button)
 	-Consider getting rid of jump attack (A + X)
@@ -25,18 +24,3 @@ Unreal Game TODOs:
 	-See if there's a package that can be used to control the camera and move it from the dragon's spot to the main fighting area
 -Add player and enemy to main fighting scene area
 -Main menu/instructions/documentation
-
-
-
-
-Generic Block Mode Code:
-
-	if (this->IsInBlockMode())
-	{
-		if (!this->InDodgeCooldown)
-		{			
-			this->CheckForDodge(DodgeDirection::Right);
-		}
-		
-		return;
-	}
