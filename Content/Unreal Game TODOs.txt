@@ -1,4 +1,6 @@
 Unreal Game TODOs:
+-Smoothen Blendspace movement transitions
+	-Watch https://www.youtube.com/watch?v=-3lxyQd4gaM&list=PLjlIN9XAUewiJuXQXJVgde6qhVLBgZjC5&index=29
 -Add power attack (Y button)
 	*Greystone Animation: Ability_R
 	-Consider getting rid of jump attack (A + X)
