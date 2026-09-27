@@ -1,9 +1,7 @@
 Unreal Game TODOs:
--Smoothen Blendspace movement transitions
-	-Watch https://www.youtube.com/watch?v=-3lxyQd4gaM&list=PLjlIN9XAUewiJuXQXJVgde6qhVLBgZjC5&index=29
 -Add power attack (Y button)
 	*Greystone Animation: Ability_R
-	-Consider getting rid of jump attack (A + X)
+	-Add unique cooldown time after power/jump attack
 -Add combo striking
 	-Incorporate other Greystone animation (Ability_E, Attack_B, Attack_C, Attack_RMB)
 -Work on Grux (or whoever ends up being the enemy)
@@ -19,6 +17,7 @@ Unreal Game TODOs:
 	-When dodge is clicked, look at incoming attacks in radius
 		-If incoming enemy attack is a basic melee attack, dodge backwards
 		-If incoming enemy attack is a special attack straight down the middle, dodge to the left/right
+		-Make sure this can be handled when the player is both Idle and Moving (and whether they're Blocking or not Blocking)
 -Work on actual Level (Megascans package?)
 	-Add Greystone's Ability_Q for opening pose
 	-Find corresponding opening pose for Grux/enemy (should they jump out of green mist first?)
@@ -27,4 +26,5 @@ Unreal Game TODOs:
 -Work on dragon scene
 	-See if there's a package that can be used to control the camera and move it from the dragon's spot to the main fighting area
 -Add player and enemy to main fighting scene area
+-Maybe consider adding PC/computer controls (after finishing XBOX/gamepad controls)
 -Main menu/instructions/documentation

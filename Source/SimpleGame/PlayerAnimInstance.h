@@ -25,8 +25,8 @@ public:
 	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;	
 	
 protected:
-	void OnAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);	
-	void OnBlockStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);		
+	void OnAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);
+	void OnJumpAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);			
 		
 // Members
 private:

@@ -20,16 +20,13 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 		}
 	}
 	
-	FName GroundMovement("Ground Movement");
+	FName GroundAttackMovement("Ground/Attack Movement");
 	
 	FOnGraphStateChanged AttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
-	this->AddNativeStateExitBinding(GroundMovement, FName("Attack"), AttackExitDelegate);
+	this->AddNativeStateExitBinding(GroundAttackMovement, FName("Attack"), AttackExitDelegate);
 		
-	FOnGraphStateChanged JumpAttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnAttackStateExit);
-	this->AddNativeStateExitBinding(FName("Air Movement"), FName("Jump Attack"), AttackExitDelegate);
-	
-	FOnGraphStateChanged BlockStateExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnBlockStateExit);
-	this->AddNativeStateExitBinding(GroundMovement, FName("Block"), BlockStateExitDelegate);
+	FOnGraphStateChanged JumpAttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnJumpAttackStateExit);
+	this->AddNativeStateExitBinding(GroundAttackMovement, FName("Jump Attack"), JumpAttackExitDelegate);
 }
 
 void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -60,7 +57,7 @@ void UPlayerAnimInstance::OnAttackStateExit(const FAnimNode_StateMachine& StateM
 	this->GameCharacter->ResetAttackParameters();
 }
 
-void UPlayerAnimInstance::OnBlockStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
+void UPlayerAnimInstance::OnJumpAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
 {
-	this->GameCharacter->ResetBlockParameters();
+	this->GameCharacter->ResetJumpAttackParameters();
 }

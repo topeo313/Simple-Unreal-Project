@@ -89,8 +89,9 @@ void ASimpleGameCharacter::BeginPlay()
 	UAnimInstance* AnimInstance = this->GetAnimInstance();
 	if (AnimInstance != nullptr)
 	{
-		this->GroundMovementStateMachine = AnimInstance->GetStateMachineInstanceFromName(FName("Ground Movement"));
-		this->AirMovementStateMachine = AnimInstance->GetStateMachineInstanceFromName(FName("Air Movement"));
+		this->SM_GroundMovement = AnimInstance->GetStateMachineInstanceFromName(FName("Ground Movement"));
+		this->SM_GroundAttackMovement = AnimInstance->GetStateMachineInstanceFromName(FName("Ground/Attack Movement"));
+		this->SM_GroundAttackAirMovement = AnimInstance->GetStateMachineInstanceFromName(FName("Ground/Attack/Air Movement"));
 	}
 }
 
@@ -173,7 +174,7 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	
 	EnhancedInputComponent->BindAction(this->LeftGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::LeftGamepadStarted);
 	
-	EnhancedInputComponent->BindAction(this->TopGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::TopGamepadStarted);
+	EnhancedInputComponent->BindAction(this->TopGamepadAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::TopGamepadStarted);
 	
 	EnhancedInputComponent->BindAction(this->RightGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::RightGamepadStarted);
 	
@@ -184,9 +185,15 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void ASimpleGameCharacter::ResetAttackParameters()
 {
 	this->AttackStarted = false;
-	this->JumpAttackStarted = false;	
 	this->SetTimer(&ASimpleGameCharacter::OnAttackCooldownTimerElapsed, ASimpleGameCharacter::AttackCooldownTimeSeconds);
 	this->InAttackCooldown = true;	
+}
+
+void ASimpleGameCharacter::ResetJumpAttackParameters()
+{
+	this->JumpAttackStarted = false;	
+	this->SetTimer(&ASimpleGameCharacter::OnJumpAttackCooldownTimerElapsed, ASimpleGameCharacter::JumpAttackCooldownTimeSeconds);
+	this->InJumpAttackCooldown = true;	
 }
 
 void ASimpleGameCharacter::ResetBlockParameters()
@@ -221,6 +228,11 @@ void ASimpleGameCharacter::OnAttackCooldownTimerElapsed()
 	this->InAttackCooldown = false;
 }
 
+void ASimpleGameCharacter::OnJumpAttackCooldownTimerElapsed()
+{
+	this->InJumpAttackCooldown = false;
+}
+
 void ASimpleGameCharacter::OnBlockCooldownTimerElapsed()
 {
 	this->InBlockCooldown = false;
@@ -245,18 +257,18 @@ void ASimpleGameCharacter::Landed(const FHitResult& Hit)
 
 bool ASimpleGameCharacter::IsAttacking() const
 {	 
-	if (this->GroundMovementStateMachine == nullptr || this->AirMovementStateMachine == nullptr)
+	if (this->SM_GroundAttackMovement == nullptr)
 	{
 		return false;
 	}
 	
-	return this->GroundMovementStateMachine->GetCurrentStateName() == FName("Attack") ||
-		   this->AirMovementStateMachine->GetCurrentStateName() == FName("Jump Attack");
+	return this->SM_GroundAttackMovement->GetCurrentStateName() == FName("Attack") || 
+		   this->SM_GroundAttackMovement->GetCurrentStateName() == FName("Jump Attack");
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 { 
-	if (this->IsAttackStarted() || this->IsAttacking() || this->IsInDodgeMode())
+	if (this->IsAttackStarted() || this->IsJumpAttackStarted() || this->IsAttacking() || this->IsInDodgeMode())
 	{
 		return;
 	}
@@ -321,17 +333,8 @@ void ASimpleGameCharacter::LeftGamepadStarted()
 	// both movement and the cooldown because moving while mashing the attack button confuses the state machine, so we want to be
 	// extra sure that we guard against the jittery/jumpy animations
 	bool movingAttackInCooldown = this->InAttackCooldown && this->IsPlayerMovementInputEnabled();
-	if (this->IsInBlockMode() || movingAttackInCooldown)
+	if (this->IsInBlockMode() || this->GetMovementComponent()->IsFalling() || this->IsAttacking() || movingAttackInCooldown)
 	{
-		return;
-	}
-	else if (this->GetCharacterMovement()->IsFalling())
-	{
-		if (this->AirMovementStateMachine->GetCurrentStateName() == FName("Jump Apex"))
-		{
-			this->JumpAttackStarted = true;
-		}
-		
 		return;
 	}
 
@@ -340,6 +343,13 @@ void ASimpleGameCharacter::LeftGamepadStarted()
 
 void ASimpleGameCharacter::TopGamepadStarted()
 {
+	if (this->IsAttacking() || this->InAttackCooldown || this->InJumpAttackCooldown)
+	{
+		return;
+	}
+	
+	this->Jump();	
+	this->JumpAttackStarted = true;
 }
 	
 void ASimpleGameCharacter::RightGamepadStarted()
@@ -392,7 +402,8 @@ void ASimpleGameCharacter::StopBlockAnimation()
 void ASimpleGameCharacter::CheckForDodge(DodgeDirection dodgeDirection)
 {
 	bool isMovementInBlock = this->IsPlayerMovementInputEnabled() && this->IsInBlockMode();
-	if (this->GetCharacterMovement()->IsFalling() || this->IsAttacking() || isMovementInBlock)
+	bool isBlockCameraBeingSet = this->IsInBlockMode() && !this->IsBlockCameraSet;
+	if (this->GetCharacterMovement()->IsFalling() || this->IsAttacking() || isMovementInBlock || isBlockCameraBeingSet || this->InBlockCooldown)
 	{
 		return;
 	}
@@ -401,6 +412,7 @@ void ASimpleGameCharacter::CheckForDodge(DodgeDirection dodgeDirection)
 	{			
 		this->StartBlockAnimation();
 	
+		// Set this so that blend space animation can be properly applied
 		this->SmoothedMovementVector =
 			dodgeDirection == DodgeDirection::Back ? FVector2D(0, -1) :
 			dodgeDirection == DodgeDirection::Left ? FVector2D(-1, 0) :

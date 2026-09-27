@@ -28,6 +28,7 @@ private:
 	
 	static constexpr auto JumpCooldownTimeSeconds = 0.175f;
 	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
+	static constexpr auto JumpAttackCooldownTimeSeconds = 5.0f;
 	static constexpr auto BlockCooldownTimeSeconds = 0.225f;
 	static constexpr auto DodgeCooldownTimeSeconds = 0.5f;
 	
@@ -56,13 +57,15 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	void ResetAttackParameters();	
+	void ResetAttackParameters();
+	void ResetJumpAttackParameters();	
 	void ResetBlockParameters();
 	void ResetDodgeParameters();
 	
 private:
 	void OnJumpCooldownTimerElapsed();	
 	void OnAttackCooldownTimerElapsed();
+	void OnJumpAttackCooldownTimerElapsed();
 	void OnBlockCooldownTimerElapsed();
 	void OnDodgeCooldownTimerElapsed();
 	
@@ -151,9 +154,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera = nullptr;
 	
-	const FAnimNode_StateMachine* GroundMovementStateMachine = nullptr;
+	const FAnimNode_StateMachine* SM_GroundMovement = nullptr;
 	
-	const FAnimNode_StateMachine* AirMovementStateMachine = nullptr;
+	const FAnimNode_StateMachine* SM_GroundAttackMovement = nullptr;
+	
+	const FAnimNode_StateMachine* SM_GroundAttackAirMovement = nullptr;
 	
 	bool InJumpCooldown;
 			
@@ -162,6 +167,8 @@ private:
 	bool InAttackCooldown;
 	
 	bool JumpAttackStarted;
+	
+	bool InJumpAttackCooldown;
 	
 	bool IsRotatingForBlock;
 	
