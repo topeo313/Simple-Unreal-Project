@@ -1,7 +1,4 @@
 Unreal Game TODOs:
--Add power attack (Y button)
-	*Greystone Animation: Ability_R
-	-Add unique cooldown time after power/jump attack
 -Add combo striking
 	-Incorporate other Greystone animation (Ability_E, Attack_B, Attack_C, Attack_RMB)
 -Work on Grux (or whoever ends up being the enemy)
@@ -26,5 +23,6 @@ Unreal Game TODOs:
 -Work on dragon scene
 	-See if there's a package that can be used to control the camera and move it from the dragon's spot to the main fighting area
 -Add player and enemy to main fighting scene area
+	-Add sound effects, music, VFX, cinematic animations
 -Maybe consider adding PC/computer controls (after finishing XBOX/gamepad controls)
 -Main menu/instructions/documentation
