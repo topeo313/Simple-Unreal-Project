@@ -1,6 +1,16 @@
 Unreal Game TODOs:
 -Add combo striking
 	-Incorporate other Greystone animation (Ability_E, Attack_B, Attack_C, Attack_RMB)
+	https://www.youtube.com/watch?v=wZ11YqdidFA
+	https://www.youtube.com/watch?v=Jjb-ZjQZUQw
+	https://www.youtube.com/watch?v=dzymw3h1NrY
+	https://www.youtube.com/watch?v=Q5xk5PYlQ1k
+	https://www.youtube.com/watch?v=ngCB5ipMzWA
+	https://www.youtube.com/watch?v=Hs2sM7eFf6Q
+	https://www.youtube.com/watch?v=ykIcN2ItweQ&list=PLNTm9yU0zou7XnRx5MfBbZnfMZJqC6ixz&index=37
+	https://www.youtube.com/watch?v=wa2JbNYjC0w
+	https://www.youtube.com/watch?v=GEQ3f5Rfr_w
+
 -Work on Grux (or whoever ends up being the enemy)
 	-Use version with lava textures (can his texture color be changed to green?)
 	-Animations
@@ -10,6 +20,9 @@ Unreal Game TODOs:
 	-Collisions
 	-Hit animations
 	-Death animations
+	https://www.youtube.com/watch?v=EQe6iyO5s0Y
+-Add capability to lock onto enemy
+	-Should basically be the same movement as Blocking (just without bringing up the shield)
 -Implement radius-based Dodge
 	-When dodge is clicked, look at incoming attacks in radius
 		-If incoming enemy attack is a basic melee attack, dodge backwards
@@ -23,6 +36,6 @@ Unreal Game TODOs:
 -Work on dragon scene
 	-See if there's a package that can be used to control the camera and move it from the dragon's spot to the main fighting area
 -Add player and enemy to main fighting scene area
-	-Add sound effects, music, VFX, cinematic animations
+	-Add sound effects, music, VFX, cinematic scenes
 -Maybe consider adding PC/computer controls (after finishing XBOX/gamepad controls)
 -Main menu/instructions/documentation
