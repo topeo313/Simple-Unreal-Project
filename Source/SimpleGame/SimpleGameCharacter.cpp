@@ -172,8 +172,6 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(this->BottomGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::BottomGamepadStarted);
 	EnhancedInputComponent->BindAction(this->BottomGamepadAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::BottomGamepadCompleted);
 	
-	EnhancedInputComponent->BindAction(this->LeftGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::LeftGamepadStarted);
-	
 	EnhancedInputComponent->BindAction(this->TopGamepadAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::TopGamepadStarted);
 	
 	EnhancedInputComponent->BindAction(this->RightGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::RightGamepadStarted);
@@ -257,13 +255,13 @@ void ASimpleGameCharacter::Landed(const FHitResult& Hit)
 
 bool ASimpleGameCharacter::IsAttacking() const
 {	 
-	if (this->SM_GroundAttackMovement == nullptr)
+	if (this->SM_GroundAttackMovement == nullptr || this->GetAnimInstance() == nullptr)
 	{
 		return false;
 	}
-	
-	return this->SM_GroundAttackMovement->GetCurrentStateName() == FName("Attack") || 
-		   this->SM_GroundAttackMovement->GetCurrentStateName() == FName("Jump Attack");
+				
+	return this->SM_GroundAttackMovement->GetCurrentStateName() == FName("Jump Attack") ||
+		   this->GetAnimInstance()->GetSlotMontageGlobalWeight(FName("AttackSlot")) > 0.0f;
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
@@ -324,21 +322,6 @@ void ASimpleGameCharacter::BottomGamepadStarted()
 void ASimpleGameCharacter::BottomGamepadCompleted()
 {
 	this->StopJumping();
-}
-
-void ASimpleGameCharacter::LeftGamepadStarted()
-{
-	// To prevent the character animations from looking stuttery or jumpy, we avoid going into the attack state if the character
-	// is both moving AND trying to attack within the attack cooldown period (i.e. rapidly pressing the attack button). We check for 
-	// both movement and the cooldown because moving while mashing the attack button confuses the state machine, so we want to be
-	// extra sure that we guard against the jittery/jumpy animations
-	bool movingAttackInCooldown = this->InAttackCooldown && this->IsPlayerMovementInputEnabled();
-	if (this->IsInBlockMode() || this->GetMovementComponent()->IsFalling() || this->IsAttacking() || movingAttackInCooldown)
-	{
-		return;
-	}
-
-	this->AttackStarted = true;
 }
 
 void ASimpleGameCharacter::TopGamepadStarted()

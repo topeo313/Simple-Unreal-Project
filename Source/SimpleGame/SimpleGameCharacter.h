@@ -57,7 +57,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	void ResetAttackParameters();
+	
 	void ResetJumpAttackParameters();	
 	void ResetBlockParameters();
 	void ResetDodgeParameters();
@@ -78,12 +80,29 @@ public:
 	
 	FVector2D GetCurrentInputMovementVector() const { return this->SmoothedMovementVector; };
 	bool IsPlayerMovementInputEnabled() const { return this->GetCharacterMovement()->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER; }
+	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	bool IsAttackStarted() const { return this->AttackStarted; }
+	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
+	void SetIsAttackStarted(bool IsStarted) { this->AttackStarted = IsStarted; }
+	
 	bool IsJumpAttackStarted() const { return this->JumpAttackStarted; }
+	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	bool IsAttacking() const;
 	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))	
+	bool IsInAttackCooldown() const { return this->InAttackCooldown; }
+	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))	
+	bool IsMovingAnAttackingInCooldown() const { return this->InAttackCooldown && this->IsPlayerMovementInputEnabled(); }
+	
 	bool IsInRotationForBlock() const { return this->IsRotatingForBlock; }
+	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	bool IsInBlockMode() const { return this->InBlockMode; }
+		
 	bool IsBlockAnimationEnded() const { return this->BlockAnimationEnded; }
 	
 	bool IsInDodgeMode() const { return this->InDodgeMode; }
@@ -98,8 +117,6 @@ protected:
 	
 	void BottomGamepadStarted();
 	void BottomGamepadCompleted();
-	
-	void LeftGamepadStarted();
 	
 	void TopGamepadStarted();
 	
@@ -128,10 +145,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> BottomGamepadAction = nullptr;
 	
-	// Execute actions associated with the Left Gamepad button
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> LeftGamepadAction = nullptr;
-	
 	// Execute actions associated with the Top Gamepad button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> TopGamepadAction = nullptr;
@@ -139,9 +152,6 @@ protected:
 	// Execute actions associated with the Right Gamepad button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> RightGamepadAction = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = true))
-	float AttackA_PlayRate = 0.8f;
 	
 	// Action to go into Block mode
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
