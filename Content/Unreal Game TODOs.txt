@@ -1,6 +1,5 @@
 Unreal Game TODOs:
 -Add combo striking
-	-Incorporate other Greystone animation (Ability_E, Attack_B, Attack_C, Attack_RMB)
 	https://www.youtube.com/watch?v=wZ11YqdidFA
 	https://www.youtube.com/watch?v=Jjb-ZjQZUQw
 	https://www.youtube.com/watch?v=dzymw3h1NrY
