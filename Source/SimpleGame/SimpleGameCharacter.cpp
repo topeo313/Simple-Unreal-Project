@@ -259,7 +259,8 @@ bool ASimpleGameCharacter::IsAttacking() const
 	{
 		return false;
 	}
-				
+	
+	// NOTE: Could also use this->GetAnimInstance().IsSlotActive((FName("AttackSlot"))) to speed things up if needed.
 	return this->SM_GroundAttackMovement->GetCurrentStateName() == FName("Jump Attack") ||
 		   this->GetAnimInstance()->GetSlotMontageGlobalWeight(FName("AttackSlot")) > 0.0f;
 }
