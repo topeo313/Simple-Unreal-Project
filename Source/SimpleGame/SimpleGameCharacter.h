@@ -87,6 +87,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	void SetIsAttackStarted(bool IsStarted) { this->AttackStarted = IsStarted; }
 	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))	
 	bool IsJumpAttackStarted() const { return this->JumpAttackStarted; }
 	
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))

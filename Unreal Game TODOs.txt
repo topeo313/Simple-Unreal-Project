@@ -1,14 +1,12 @@
 Unreal Game TODOs:
 -Add combo striking
-	https://www.youtube.com/watch?v=wZ11YqdidFA
-	https://www.youtube.com/watch?v=Jjb-ZjQZUQw
-	https://www.youtube.com/watch?v=dzymw3h1NrY
-	https://www.youtube.com/watch?v=Q5xk5PYlQ1k
-	https://www.youtube.com/watch?v=ngCB5ipMzWA
-	https://www.youtube.com/watch?v=Hs2sM7eFf6Q
-	https://www.youtube.com/watch?v=ykIcN2ItweQ&list=PLNTm9yU0zou7XnRx5MfBbZnfMZJqC6ixz&index=37
-	https://www.youtube.com/watch?v=wa2JbNYjC0w
-	https://www.youtube.com/watch?v=GEQ3f5Rfr_w
+	-References:
+		https://www.youtube.com/watch?v=wZ11YqdidFA
+		https://www.youtube.com/watch?v=Jjb-ZjQZUQw
+		https://www.youtube.com/watch?v=GEQ3f5Rfr_w
+	-Create multiple Select nodes. Give each Select node a set of combos, then cycle through each one, incrementing an "attackIndex" integer variable as needed. If the current attack animation completes, then reset the attackIndex
+	-To make things faster-paced and more fluid, consider speeding up the play rate of some of the animations (i.e. increasing the Play Rate) and/or increasing the buffer time between new attacks
+	-If we're at the last attack in a combo, let attack play out and trigger attack cooldown. Don't let attack started get set to false.
 
 -Work on Grux (or whoever ends up being the enemy)
 	-Use version with lava textures (can his texture color be changed to green?)
