@@ -4,9 +4,14 @@ Unreal Game TODOs:
 		https://www.youtube.com/watch?v=wZ11YqdidFA
 		https://www.youtube.com/watch?v=Jjb-ZjQZUQw
 		https://www.youtube.com/watch?v=GEQ3f5Rfr_w
-	-Create multiple Select nodes. Give each Select node a set of combos, then cycle through each one, incrementing an "attackIndex" integer variable as needed. If the current attack animation completes, then reset the attackIndex
+	-Steps to add a new combo to character BP:
+		1. Add new Anim Montage array (of object references) to Character BP
+		2. Add new Combo to Character BP ComboChain Enum
+		3. Add new option to Switch Statement in Character BP GetCurrentChainMontages function
+
 	-To make things faster-paced and more fluid, consider speeding up the play rate of some of the animations (i.e. increasing the Play Rate) and/or increasing the buffer time between new attacks
-	-If we're at the last attack in a combo, let attack play out and trigger attack cooldown. Don't let attack started get set to false.
+	-If it's not too much trouble, try incorporating movement into attacks
+
 
 -Work on Grux (or whoever ends up being the enemy)
 	-Use version with lava textures (can his texture color be changed to green?)
