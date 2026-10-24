@@ -171,9 +171,7 @@ void ASimpleGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	
 	EnhancedInputComponent->BindAction(this->BottomGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::BottomGamepadStarted);
 	EnhancedInputComponent->BindAction(this->BottomGamepadAction, ETriggerEvent::Completed, this, &ASimpleGameCharacter::BottomGamepadCompleted);
-	
-	EnhancedInputComponent->BindAction(this->TopGamepadAction, ETriggerEvent::Triggered, this, &ASimpleGameCharacter::TopGamepadStarted);
-	
+
 	EnhancedInputComponent->BindAction(this->RightGamepadAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::RightGamepadStarted);
 	
 	EnhancedInputComponent->BindAction(this->BlockAction, ETriggerEvent::Started, this, &ASimpleGameCharacter::BlockStarted);
@@ -187,11 +185,11 @@ void ASimpleGameCharacter::ResetAttackParameters()
 	this->InAttackCooldown = true;	
 }
 
-void ASimpleGameCharacter::ResetJumpAttackParameters()
+void ASimpleGameCharacter::ResetHeavyAttackParameters()
 {
-	this->JumpAttackStarted = false;	
-	this->SetTimer(&ASimpleGameCharacter::OnJumpAttackCooldownTimerElapsed, ASimpleGameCharacter::JumpAttackCooldownTimeSeconds);
-	this->InJumpAttackCooldown = true;	
+	this->HeavyAttackStarted = false;	
+	this->SetTimer(&ASimpleGameCharacter::OnHeavyAttackCooldownTimerElapsed, ASimpleGameCharacter::HeavyAttackCooldownTimeSeconds);
+	this->InHeavyAttackCooldown = true;	
 }
 
 void ASimpleGameCharacter::ResetBlockParameters()
@@ -226,9 +224,9 @@ void ASimpleGameCharacter::OnAttackCooldownTimerElapsed()
 	this->InAttackCooldown = false;
 }
 
-void ASimpleGameCharacter::OnJumpAttackCooldownTimerElapsed()
+void ASimpleGameCharacter::OnHeavyAttackCooldownTimerElapsed()
 {
-	this->InJumpAttackCooldown = false;
+	this->InHeavyAttackCooldown = false;
 }
 
 void ASimpleGameCharacter::OnBlockCooldownTimerElapsed()
@@ -255,19 +253,18 @@ void ASimpleGameCharacter::Landed(const FHitResult& Hit)
 
 bool ASimpleGameCharacter::IsAttacking() const
 {	 
-	if (this->SM_GroundAttackMovement == nullptr || this->GetAnimInstance() == nullptr)
+	if (this->GetAnimInstance() == nullptr)
 	{
 		return false;
 	}
 	
 	// NOTE: Could also use this->GetAnimInstance().IsSlotActive((FName("AttackSlot"))) to speed things up if needed.
-	return this->SM_GroundAttackMovement->GetCurrentStateName() == FName("Jump Attack") ||
-		   this->GetAnimInstance()->GetSlotMontageGlobalWeight(FName("AttackSlot")) > 0.0f;
+	return this->GetAnimInstance()->GetSlotMontageGlobalWeight(FName("AttackSlot")) > 0.0f || this->HeavyAttackStarted;
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 { 
-	if (this->IsAttackStarted() || this->IsJumpAttackStarted() || this->IsAttacking() || this->IsInDodgeMode())
+	if (this->IsAttackStarted() || this->IsHeavyAttackStarted() || this->IsAttacking() || this->IsInDodgeMode())
 	{
 		return;
 	}
@@ -323,17 +320,6 @@ void ASimpleGameCharacter::BottomGamepadStarted()
 void ASimpleGameCharacter::BottomGamepadCompleted()
 {
 	this->StopJumping();
-}
-
-void ASimpleGameCharacter::TopGamepadStarted()
-{
-	if (this->IsAttacking() || this->InAttackCooldown || this->InJumpAttackCooldown)
-	{
-		return;
-	}
-	
-	this->Jump();	
-	this->JumpAttackStarted = true;
 }
 	
 void ASimpleGameCharacter::RightGamepadStarted()

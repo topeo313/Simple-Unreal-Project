@@ -9,7 +9,7 @@ Unreal Game TODOs:
 		2. Add new Combo to Character BP ComboChain Enum
 		3. Add new option to Switch Statement in Character BP GetCurrentChainMontages function
 
-	-To make things faster-paced and more fluid, consider speeding up the play rate of some of the animations (i.e. increasing the Play Rate) and/or increasing the buffer time between new attacks
+	-To make things faster-paced and more fluid, consider speeding up the play rate of some of the animations (i.e. increasing the Play Rate) and/or increasing the buffer time between new attacks. Also clean up transitions/blend out times for attacks
 	-If it's not too much trouble, try incorporating movement into attacks
 
 

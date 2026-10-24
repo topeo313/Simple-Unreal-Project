@@ -19,11 +19,6 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 			this->GameCharacterMovementComponent = this->GameCharacter->GetCharacterMovement();
 		}
 	}
-	
-	FName GroundAttackMovement("Ground/Attack Movement");
-			
-	FOnGraphStateChanged JumpAttackExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnJumpAttackStateExit);
-	this->AddNativeStateExitBinding(GroundAttackMovement, FName("Jump Attack"), JumpAttackExitDelegate);
 }
 
 void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -39,7 +34,7 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isPlayerMovementInputEnabled = this->GameCharacter->IsPlayerMovementInputEnabled();
 	this->currentInputMovementVector = this->GameCharacter->GetCurrentInputMovementVector();
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
-	this->isJumpAttackStarted = this->GameCharacter->IsJumpAttackStarted();
+	this->isHeavyAttackStarted = this->GameCharacter->IsHeavyAttackStarted();
 	this->isAttacking = this->GameCharacter->IsAttacking();
 	this->isRotatingForBlock = this->GameCharacter->IsInRotationForBlock();
 	this->isInBlockMode = this->GameCharacter->IsInBlockMode();
@@ -47,9 +42,4 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isInDodgeMode = this->GameCharacter->IsInDodgeMode();
 		
 	//UE_LOG(LogTemp, Warning, TEXT("%d"), this->isRotatingForBlock);
-}
-
-void UPlayerAnimInstance::OnJumpAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
-{
-	this->GameCharacter->ResetJumpAttackParameters();
 }

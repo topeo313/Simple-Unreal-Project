@@ -28,7 +28,7 @@ private:
 	
 	static constexpr auto JumpCooldownTimeSeconds = 0.175f;
 	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
-	static constexpr auto JumpAttackCooldownTimeSeconds = 5.0f;
+	static constexpr auto HeavyAttackCooldownTimeSeconds = 3.0f;
 	static constexpr auto BlockCooldownTimeSeconds = 0.225f;
 	static constexpr auto DodgeCooldownTimeSeconds = 0.5f;
 	
@@ -60,14 +60,16 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	void ResetAttackParameters();
 	
-	void ResetJumpAttackParameters();	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
+	void ResetHeavyAttackParameters();	
+	
 	void ResetBlockParameters();
 	void ResetDodgeParameters();
 	
 private:
 	void OnJumpCooldownTimerElapsed();	
 	void OnAttackCooldownTimerElapsed();
-	void OnJumpAttackCooldownTimerElapsed();
+	void OnHeavyAttackCooldownTimerElapsed();
 	void OnBlockCooldownTimerElapsed();
 	void OnDodgeCooldownTimerElapsed();
 	
@@ -88,7 +90,10 @@ public:
 	void SetIsAttackStarted(bool IsStarted) { this->AttackStarted = IsStarted; }
 	
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))	
-	bool IsJumpAttackStarted() const { return this->JumpAttackStarted; }
+	bool IsHeavyAttackStarted() const { return this->HeavyAttackStarted; }
+	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))	
+	void SetIsHeavyAttackStarted(bool IsStarted) { this->HeavyAttackStarted = IsStarted; }	
 	
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	bool IsAttacking() const;
@@ -97,7 +102,10 @@ public:
 	bool IsInAttackCooldown() const { return this->InAttackCooldown; }
 	
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))	
-	bool IsMovingAnAttackingInCooldown() const { return this->InAttackCooldown && this->IsPlayerMovementInputEnabled(); }
+	bool IsInHeavyAttackCooldown() const { return this->InHeavyAttackCooldown; }	
+	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))	
+	bool IsMovingAndAttackingInCooldown() const { return this->InAttackCooldown && this->IsPlayerMovementInputEnabled(); }
 	
 	bool IsInRotationForBlock() const { return this->IsRotatingForBlock; }
 	
@@ -118,9 +126,7 @@ protected:
 	
 	void BottomGamepadStarted();
 	void BottomGamepadCompleted();
-	
-	void TopGamepadStarted();
-	
+		
 	void RightGamepadStarted();
 	
 	void BlockStarted();
@@ -145,10 +151,6 @@ protected:
 	// Execute actions associated with the Bottom Gamepad button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> BottomGamepadAction = nullptr;
-	
-	// Execute actions associated with the Top Gamepad button
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> TopGamepadAction = nullptr;
 	
 	// Execute actions associated with the Right Gamepad button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
@@ -177,9 +179,9 @@ private:
 	
 	bool InAttackCooldown;
 	
-	bool JumpAttackStarted;
+	bool HeavyAttackStarted;
 	
-	bool InJumpAttackCooldown;
+	bool InHeavyAttackCooldown;
 	
 	bool IsRotatingForBlock;
 	

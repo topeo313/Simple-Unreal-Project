@@ -22,10 +22,7 @@ class SIMPLEGAME_API UPlayerAnimInstance : public UAnimInstance
 public:
 	void NativeInitializeAnimation() override;
 	
-	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;	
-	
-protected:
-	void OnJumpAttackStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);			
+	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;			
 		
 // Members
 private:
@@ -54,7 +51,7 @@ private:
 	bool isAttackStarted;
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
-	bool isJumpAttackStarted;	
+	bool isHeavyAttackStarted;	
 	
 	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
 	bool isAttacking;
