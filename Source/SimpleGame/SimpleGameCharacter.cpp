@@ -262,6 +262,25 @@ bool ASimpleGameCharacter::IsAttacking() const
 	return this->GetAnimInstance()->GetSlotMontageGlobalWeight(FName("AttackSlot")) > 0.0f || this->HeavyAttackStarted;
 }
 
+bool ASimpleGameCharacter::IsAttackBlendingOut() const
+{	 
+	if (this->GetAnimInstance() == nullptr)
+	{
+		return false;
+	}
+	
+	FName SlotName = FName("AttackSlot");
+	
+	// Always return true if the slot isn't active
+	if (!this->GetAnimInstance()->IsSlotActive(SlotName))
+	{
+		return true;
+	}
+	
+	// NOTE: Could also use this->GetAnimInstance().IsSlotActive((FName("AttackSlot"))) to speed things up if needed.
+	return this->GetAnimInstance()->GetSlotMontageGlobalWeight(SlotName) < 1.0f && this->GetAnimInstance()->IsSlotActive(SlotName);
+}
+
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 { 
 	if (this->IsAttackStarted() || this->IsHeavyAttackStarted() || this->IsAttacking() || this->IsInDodgeMode())

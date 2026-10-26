@@ -98,6 +98,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	bool IsAttacking() const;
 	
+	bool IsAttackBlendingOut() const;	
+	
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))	
 	bool IsInAttackCooldown() const { return this->InAttackCooldown; }
 	

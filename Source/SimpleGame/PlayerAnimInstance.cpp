@@ -36,6 +36,7 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isAttackStarted = this->GameCharacter->IsAttackStarted();	
 	this->isHeavyAttackStarted = this->GameCharacter->IsHeavyAttackStarted();
 	this->isAttacking = this->GameCharacter->IsAttacking();
+	this->isAttackBlendingOut = this->GameCharacter->IsAttackBlendingOut();
 	this->isRotatingForBlock = this->GameCharacter->IsInRotationForBlock();
 	this->isInBlockMode = this->GameCharacter->IsInBlockMode();
 	this->isBlockAnimationEnded = this->GameCharacter->IsBlockAnimationEnded();
