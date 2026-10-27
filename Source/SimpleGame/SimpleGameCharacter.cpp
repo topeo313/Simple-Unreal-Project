@@ -283,7 +283,7 @@ bool ASimpleGameCharacter::IsAttackBlendingOut() const
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
 { 
-	if (this->IsAttackStarted() || this->IsHeavyAttackStarted() || this->IsAttacking() || this->IsInDodgeMode())
+	if (this->IsAttackStarted() || this->IsAttacking() || this->IsHeavyAttackStarted() || this->IsInDodgeMode())
 	{
 		return;
 	}

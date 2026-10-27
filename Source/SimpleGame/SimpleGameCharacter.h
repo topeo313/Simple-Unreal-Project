@@ -27,7 +27,7 @@ private:
 	static constexpr auto MoveInterpolationSpeed = 15.0f;
 	
 	static constexpr auto JumpCooldownTimeSeconds = 0.175f;
-	static constexpr auto AttackCooldownTimeSeconds = 0.175f;
+	static constexpr auto AttackCooldownTimeSeconds = 0.005f;
 	static constexpr auto HeavyAttackCooldownTimeSeconds = 3.0f;
 	static constexpr auto BlockCooldownTimeSeconds = 0.225f;
 	static constexpr auto DodgeCooldownTimeSeconds = 0.5f;
