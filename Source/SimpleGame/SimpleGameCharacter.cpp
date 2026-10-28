@@ -78,7 +78,11 @@ void ASimpleGameCharacter::BeginPlay()
 	
 	APlayerController* PlayerController = ::Cast<APlayerController>(this->Controller);
 	if (PlayerController != nullptr)
-	{
+	{	
+		// float yawValue = 75.f;
+		// PlayerController->PlayerCameraManager->ViewYawMin = -yawValue;
+		// PlayerController->PlayerCameraManager->ViewYawMax = yawValue;
+	
 		UEnhancedInputLocalPlayerSubsystem* PcSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 		if (PcSubsystem != nullptr)
 		{

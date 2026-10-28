@@ -1,16 +1,4 @@
 Unreal Game TODOs:
--Add combo striking
-	-References:
-		https://www.youtube.com/watch?v=wZ11YqdidFA
-		https://www.youtube.com/watch?v=Jjb-ZjQZUQw
-		https://www.youtube.com/watch?v=GEQ3f5Rfr_w
-	-Steps to add a new combo to character BP:
-		1. Add new Anim Montage array (of object references) to Character BP
-		2. Add new Combo to Character BP ComboChain Enum
-		3. Add new option to Switch Statement in Character BP GetCurrentChainMontages function
-
-	-To make things faster-paced and more fluid, consider speeding up the play rate of some of the animations (i.e. increasing the Play Rate) and/or increasing the buffer time between new attacks. Also clean up transitions/blend out times for attacks
-	-If it's not too much trouble, try incorporating movement into attacks
 
 
 -Work on Grux (or whoever ends up being the enemy)
@@ -26,6 +14,7 @@ Unreal Game TODOs:
 -Add capability to lock onto enemy
 	-Should basically be the same movement as Blocking (just without bringing up the shield)
 -Implement radius-based Dodge
+	-Try incorporating Mixamo-based rolling/evasion, if it isn't too much trouble
 	-When dodge is clicked, look at incoming attacks in radius
 		-If incoming enemy attack is a basic melee attack, dodge backwards
 		-If incoming enemy attack is a special attack straight down the middle, dodge to the left/right
@@ -41,3 +30,6 @@ Unreal Game TODOs:
 	-Add sound effects, music, VFX, cinematic scenes
 -Maybe consider adding PC/computer controls (after finishing XBOX/gamepad controls)
 -Main menu/instructions/documentation
+
+-Potential cleanup/polish tasks:
+	-To make things faster-paced and more fluid, consider speeding up the play rate of some of the animations (i.e. increasing the Play Rate) and/or increasing the buffer time between new attacks. Also clean up transitions/blend out times for attacks. Also clean up movement/interpolation when attacking
