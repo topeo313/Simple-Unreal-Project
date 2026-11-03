@@ -4,7 +4,6 @@
 
 #include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
-#include "DodgeDirection.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
@@ -30,7 +29,7 @@ private:
 	static constexpr auto AttackCooldownTimeSeconds = 0.005f;
 	static constexpr auto HeavyAttackCooldownTimeSeconds = 3.0f;
 	static constexpr auto BlockCooldownTimeSeconds = 0.225f;
-	static constexpr auto DodgeCooldownTimeSeconds = 0.5f;
+	static constexpr auto DodgeCooldownTimeSeconds = 0.25f;
 	
 	static constexpr auto DodgeMoveFactor = 500;
 	static constexpr auto DodgeJumpFactor = 150;
@@ -118,6 +117,8 @@ public:
 	
 	bool IsInDodgeMode() const { return this->InDodgeMode; }
 	
+	void SetMoveToDodgePosition();
+	
 protected:
 	// Handles movement in all directions
 	void Move(const FInputActionValue& Value);
@@ -130,13 +131,16 @@ protected:
 	void BottomGamepadCompleted();
 		
 	void RightGamepadStarted();
+	void RightGamepadCompleted();
 	
-	void BlockStarted();
-	void BlockCompleted();
+	void LeftShoulderStarted();
+	
+	void RightShoulderStarted();
+	
 	void StartBlockAnimation();
 	void StopBlockAnimation();
 	
-	void CheckForDodge(DodgeDirection dodgeDirection);
+	bool EnableDodgeMode();
 	
 // Members
 protected:
@@ -158,9 +162,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> RightGamepadAction = nullptr;
 	
-	// Action to go into Block mode
+	// Execute actions associated with the Left Shoulder button
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> BlockAction = nullptr;	
+	TObjectPtr<UInputAction> LeftShoulderAction = nullptr;	
+	
+	// Execute actions associated with the Right Shoulder button
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> RightShoulderAction = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UAnimMontage> DodgeLeftMontage = nullptr;	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UAnimMontage> DodgeRightMontage = nullptr;
 			
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -202,9 +216,13 @@ private:
 	
 	bool InDodgeMode;
 	
+	bool IsMovingToDodgePosition;
+	
+	FVector DodgeDestPosition;
+	
 	bool InDodgeCooldown;
-	
+		
 	FVector2D SmoothedMovementVector;
-	
+		
 	double PrevControlYaw;
 };

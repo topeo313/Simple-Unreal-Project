@@ -19,6 +19,11 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 			this->GameCharacterMovementComponent = this->GameCharacter->GetCharacterMovement();
 		}
 	}
+	
+	FName GroundMovement("Ground Movement");
+	
+	FOnGraphStateChanged DodgeExitDelegate = FOnGraphStateChanged::CreateUObject(this, &UPlayerAnimInstance::OnDodgeStateExit);
+	this->AddNativeStateExitBinding(GroundMovement, FName("Dodge"), DodgeExitDelegate);
 }
 
 void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -43,4 +48,9 @@ void UPlayerAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	this->isInDodgeMode = this->GameCharacter->IsInDodgeMode();
 		
 	//UE_LOG(LogTemp, Warning, TEXT("%d"), this->isRotatingForBlock);
+}
+
+void UPlayerAnimInstance::OnDodgeStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex)
+{
+	this->GameCharacter->ResetDodgeParameters();
 }

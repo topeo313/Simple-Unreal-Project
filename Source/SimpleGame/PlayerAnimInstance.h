@@ -22,7 +22,10 @@ class SIMPLEGAME_API UPlayerAnimInstance : public UAnimInstance
 public:
 	void NativeInitializeAnimation() override;
 	
-	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;			
+	void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;		
+	
+protected:
+	void OnDodgeStateExit(const FAnimNode_StateMachine& StateMachine, int PrevStateIndex, int NextStateIndex);	
 		
 // Members
 private:
