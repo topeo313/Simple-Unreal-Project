@@ -79,7 +79,7 @@ public:
 	
 	virtual void Landed(const FHitResult& Hit) override;
 	
-	FVector2D GetCurrentInputMovementVector() const { return this->SmoothedMovementVector; };
+	FVector2D GetCurrentInputMovementVector() const;
 	bool IsPlayerMovementInputEnabled() const { return this->GetCharacterMovement()->GetCurrentAcceleration().SizeSquared() > KINDA_SMALL_NUMBER; }
 	
 	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
@@ -115,9 +115,13 @@ public:
 		
 	bool IsBlockAnimationEnded() const { return this->BlockAnimationEnded; }
 	
+	UFUNCTION(BlueprintCallable, meta = (Category = "Functions"))
 	bool IsInDodgeMode() const { return this->InDodgeMode; }
 	
 	void SetMoveToDodgePosition();
+			
+	UFUNCTION()	
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	
 protected:
 	// Handles movement in all directions

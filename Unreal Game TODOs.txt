@@ -1,6 +1,5 @@
 Unreal Game TODOs:
 
-
 -Work on Grux (or whoever ends up being the enemy)
 	-Use version with lava textures (can his texture color be changed to green?)
 	-Animations

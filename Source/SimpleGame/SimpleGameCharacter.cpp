@@ -38,7 +38,7 @@ ASimpleGameCharacter::ASimpleGameCharacter()
 	// Cut top speed down (Default is usually 600.0f)
 	CharMovement->MaxWalkSpeed = 375.0f;
 		
-	// Set these properties to match the coresponding property values in the "Blend Poses by bool" node
+	// Set these properties to match the corresponding property values in the "Blend Poses by bool" node
 	this->BlockEndBlendTracker.SetBlendTime(0.15f);
 	this->BlockEndBlendTracker.SetBlendOption(EAlphaBlendOption::HermiteCubic);
 	
@@ -92,6 +92,8 @@ void ASimpleGameCharacter::BeginPlay()
 		this->SM_GroundMovement = AnimInstance->GetStateMachineInstanceFromName(FName("Ground Movement"));
 		this->SM_GroundAttackMovement = AnimInstance->GetStateMachineInstanceFromName(FName("Ground/Attack Movement"));
 		this->SM_GroundAttackAirMovement = AnimInstance->GetStateMachineInstanceFromName(FName("Ground/Attack/Air Movement"));
+		
+		AnimInstance->OnMontageEnded.AddDynamic(this, &ASimpleGameCharacter::OnMontageEnded);
 	}
 }
 
@@ -114,9 +116,10 @@ void ASimpleGameCharacter::Tick(float DeltaTime)
 			{
 				this->bUseControllerRotationYaw = true;
 				
-				// Trigger foot movement (i.e. set IsRotatingForBlock to true) only when we rotate
+				// Trigger foot movement (i.e. set IsRotatingForBlock to true) only when we rotate (transitioning to the "In-Place Rotate" state)
 				double CurControlYaw = this->GetControlRotation().Yaw;
-				this->IsRotatingForBlock = !FMath::IsNearlyEqual(CurControlYaw, this->PrevControlYaw);
+				double YawDelta = FMath::FindDeltaAngleDegrees(CurControlYaw, this->PrevControlYaw);
+				this->IsRotatingForBlock = !FMath::IsNearlyZero(YawDelta, 0.01f);
 				this->PrevControlYaw = CurControlYaw;	
 			}
 			else
@@ -255,6 +258,11 @@ void ASimpleGameCharacter::Landed(const FHitResult& Hit)
 	}
 }
 
+FVector2D ASimpleGameCharacter::GetCurrentInputMovementVector() const 
+{ 
+	return this->SmoothedMovementVector; 
+}
+
 bool ASimpleGameCharacter::IsAttacking() const
 {	 
 	if (this->GetAnimInstance() == nullptr)
@@ -281,8 +289,21 @@ bool ASimpleGameCharacter::IsAttackBlendingOut() const
 		return true;
 	}
 	
+	FAnimMontageInstance* MontageInstance = this->GetAnimInstance()->GetActiveMontageInstance();
+	
+	if (MontageInstance->IsPlaying() && !MontageInstance->IsActive())
+	{
+		float CurrentTime = MontageInstance->GetPosition();
+		float TotalDuration = MontageInstance->Montage->GetPlayLength();
+		if (CurrentTime / TotalDuration >= 0.9f)
+		{
+			return true;
+		}
+	}	
+	
+	return false;
 	// NOTE: Could also use this->GetAnimInstance().IsSlotActive((FName("AttackSlot"))) to speed things up if needed.
-	return this->GetAnimInstance()->GetSlotMontageGlobalWeight(SlotName) < 1.0f && this->GetAnimInstance()->IsSlotActive(SlotName);
+	//return this->GetAnimInstance()->GetSlotMontageGlobalWeight(SlotName) < 1.0f && this->GetAnimInstance()->IsSlotActive(SlotName);
 }
 
 void ASimpleGameCharacter::SetMoveToDodgePosition()
@@ -291,6 +312,14 @@ void ASimpleGameCharacter::SetMoveToDodgePosition()
 		this->GetActorRightVector() : -this->GetActorRightVector();
 	this->DodgeDestPosition = this->GetActorLocation() + (DodgeVector * 25);
 	this->IsMovingToDodgePosition = true;
+}
+
+void ASimpleGameCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage == this->DodgeLeftMontage || Montage == this->DodgeRightMontage)
+	{
+		this->ResetDodgeParameters();
+	}
 }
 
 void ASimpleGameCharacter::Move(const FInputActionValue& Value)
@@ -419,14 +448,15 @@ void ASimpleGameCharacter::StopBlockAnimation()
 
 bool ASimpleGameCharacter::EnableDodgeMode()
 {
-	bool isMovementInBlock = this->IsPlayerMovementInputEnabled() && this->IsInBlockMode();
 	bool isBlockCameraBeingSet = this->IsInBlockMode() && !this->IsBlockCameraSet;
 	
 	if (this->InDodgeMode || this->GetCharacterMovement()->IsFalling() || !this->IsAttackBlendingOut() || 
-		isMovementInBlock || isBlockCameraBeingSet || this->InBlockCooldown)
+		this->HeavyAttackStarted || isBlockCameraBeingSet || this->InBlockCooldown)
 	{
 		return false;
 	}
+	
+	//this->StopBlockAnimation();
 
 	if (!this->InDodgeCooldown)
 	{			
