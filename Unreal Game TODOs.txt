@@ -4,7 +4,29 @@ Unreal Game TODOs:
 	-Use version with lava textures (can his texture color be changed to green?)
 	-Animations
 	-State Machine
-	-AI
+	-Unreal Engine 5 AI Tutorials:
+		-https://www.youtube.com/watch?v=xm-7m5Fw1HU
+		-https://www.youtube.com/watch?v=-t3PbGRazKg&list=PLNwKK6OwH7eW1n49TW6-FmiZhqRn97cRy
+		-https://www.youtube.com/watch?v=3XuEFmpUJeI
+		-https://www.youtube.com/watch?v=YTWGchRz0R8&list=PL7PH1WCMqwcrcmflGwOP2m1HLZ3awOfAJ
+		-https://www.youtube.com/watch?v=AM9toIQTSyM&list=PLIP5nRgAhTrbndoqdJwTjJvlg0OIRzg-l&index=3
+		-https://www.youtube.com/watch?v=731VTm-GQf0
+		-https://www.youtube.com/watch?v=IDZh0epFTRY&list=PL4G2bSPE_8uklDwraUCMKHRk2ZiW29R6e
+		-https://www.youtube.com/watch?v=WgOJbwScSKw
+		-https://www.youtube.com/watch?v=sVV32qivy1A
+		-https://www.youtube.com/watch?v=RoiWZPNowPA
+		-https://www.youtube.com/watch?v=CDVMKfAk2zQ
+		-https://www.youtube.com/watch?v=1U19AJxCpNw
+		-https://www.youtube.com/watch?v=fDqvWbWZyig
+		-https://www.youtube.com/watch?v=UuqKC0AgeXU
+		-https://www.youtube.com/watch?v=z96BRmR7zXQ
+		-https://www.youtube.com/watch?v=qgx-DD6uzSc&list=PLjlIN9XAUewjZYkqKwPePTKZIYxX2v1Pn&index=18
+		-https://www.youtube.com/watch?v=iY1jnFvHgbE
+		-https://www.youtube.com/watch?v=TrmXseIPU3k&list=PLoReGgpfex3x73FUEWY1W0HGXVGsFAw5E
+		-For reference:
+			https://www.youtube.com/watch?v=PrHKzKQdZxY
+			https://www.youtube.com/watch?v=Qq_xX1JCreI
+			https://www.youtube.com/watch?v=a3bHkVDZuYU&t=2323s
 -Work on Player/Enemy combat
 	-Collisions
 	-Hit animations
